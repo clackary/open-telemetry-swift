@@ -40,7 +40,12 @@ public struct OpenTelemetry {
         meterProvider = DefaultMeterProvider.instance
         loggerProvider = DefaultLoggerProvider.instance
         baggageManager = DefaultBaggageManager.instance
+
+        #if os(Linux)
+        contextProvider = OpenTelemetryContextProvider(contextManager: BasicActivityContextManager.instance)
+        #else
         contextProvider = OpenTelemetryContextProvider(contextManager: ActivityContextManager.instance)
+        #endif
     }
 
     public static func registerStableMeterProvider(meterProvider: StableMeterProvider) {
