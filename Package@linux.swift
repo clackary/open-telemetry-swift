@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "opentelemetry-swift",
     platforms: [
-      .linux,
+      .linux(),
     ],
     products: [
         .library(name: "OpenTelemetryApi", type: .static, targets: ["OpenTelemetryApi"]),

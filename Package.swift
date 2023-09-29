@@ -8,7 +8,8 @@ let package = Package(
     platforms: [
         .macOS(.v10_13),
         .iOS(.v11),
-        .tvOS(.v11)
+        .tvOS(.v11),
+        .linux(),
     ],
     products: [
         .library(name: "OpenTelemetryApi", type: .static, targets: ["OpenTelemetryApi"]),
@@ -44,8 +45,12 @@ let package = Package(
         .package(name: "Reachability.swift", url: "https://github.com/ashleymills/Reachability.swift", exact: "5.1.0"),
     ],
     targets: [
+      .systemLibrary(name: "Cucontext", pkgConfig: "libc"),
+
       .target(name: "OpenTelemetryApi",
-              dependencies: []),
+              dependencies: [
+                .target(name: "Cucontext", condition: .when(platforms: [.linux])),
+              ]),
       .target(name: "OpenTelemetrySdk",
               dependencies: ["OpenTelemetryApi"]),
       .target(name: "ResourceExtension",
