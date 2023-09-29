@@ -85,6 +85,7 @@ class ActivityContextManager: ContextManager {
 
         var activityState = os_activity_scope_state_s()
 
+        print("createActivityContext(): activityState: \(activityState)")
         print("createActivityContext(): activity: \(activity); currentActivityId: \(currentActivityId); OS_ACTIVITY_CURRENT: \(OS_ACTIVITY_CURRENT)")
         
         os_activity_scope_enter(activity, &activityState)
