@@ -1,0 +1,6 @@
+
+module COucontext [system] {
+    header "/usr/include/ucontext.h"
+    link "c"
+    export *
+}

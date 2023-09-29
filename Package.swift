@@ -41,7 +41,7 @@ let package = Package(
         .package(name: "swift-protobuf", url: "https://github.com/apple/swift-protobuf.git", exact: "1.20.2"),
         .package(name: "swift-log", url: "https://github.com/apple/swift-log.git", exact: "1.4.4"),
         .package(name: "swift-metrics", url: "https://github.com/apple/swift-metrics.git", exact: "2.1.1"),
-        .package(name: "Reachability.swift", url: "https://github.com/ashleymills/Reachability.swift", exact: "5.1.0")
+        .package(name: "Reachability.swift", url: "https://github.com/ashleymills/Reachability.swift", exact: "5.1.0"),
     ],
     targets: [
         .target(name: "OpenTelemetryApi",
@@ -200,5 +200,6 @@ let package = Package(
                 dependencies: ["URLSessionInstrumentation", "StdoutExporter"],
                 path: "Examples/Network Sample",
                 exclude: ["README.md"]),
+        .systemLibrary(name: "Cucontext", pkgConfig: "libc", providers: (["libc6-dev"])),
     ]
 )
