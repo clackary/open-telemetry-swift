@@ -48,12 +48,14 @@ class ActivityContextManager: ContextManager {
         var parentIdent: os_activity_id_t = 0
         var activityIdent = os_activity_get_identifier(OS_ACTIVITY_CURRENT, &parentIdent)
 
-        print("seCurrentContextValue(): activity identifier: \(activityIdent)")
+        print("seCurrentContextValue(): activityIdent: \(activityIdent)")
         
         rlock.lock()
 
         if contextMap[activityIdent] == nil || contextMap[activityIdent]?[key.rawValue] != nil {
             var scope: os_activity_scope_state_s
+
+            print("setCurrentContextValue(): key: \(key.rawValue)")
             
             (activityIdent, scope) = createActivityContext()
 
@@ -82,20 +84,28 @@ class ActivityContextManager: ContextManager {
 
     func removeContextValue(forKey key: OpenTelemetryContextKeys, value: AnyObject) {
         let activityIdent = os_activity_get_identifier(OS_ACTIVITY_CURRENT, nil)
+
+        print("removeContextValue(): activityIdent: \(activityIdent)")
+        
         rlock.lock()
+
         if let currentValue = contextMap[activityIdent]?[key.rawValue],
-           currentValue === value
-        {
-         contextMap[activityIdent]?[key.rawValue] = nil
-          if contextMap[activityIdent]?.isEmpty ?? false {
-            contextMap[activityIdent] = nil
-          }
+           currentValue === value {
+            contextMap[activityIdent]?[key.rawValue] = nil
+
+            print("removeContextValue() key: \(key.rawValue)")
+
+            if contextMap[activityIdent]?.isEmpty ?? false {
+                contextMap[activityIdent] = nil
+            }
         }
+
         if let scope = objectScope.object(forKey: value) {
             var scope = scope.scope
             os_activity_scope_leave(&scope)
             objectScope.removeObject(forKey: value)
         }
+
         rlock.unlock()
     }
 }
