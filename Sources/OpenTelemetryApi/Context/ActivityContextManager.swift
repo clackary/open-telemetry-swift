@@ -34,13 +34,22 @@ class ActivityContextManager: ContextManager {
         var parentIdent: os_activity_id_t = 0
         let activityIdent = os_activity_get_identifier(OS_ACTIVITY_CURRENT, &parentIdent)
         var contextValue: AnyObject?
+
+        print("getCurrentContextValue(): key: \(key); activityIdent: \(activityIdent)")
+
         rlock.lock()
+
         guard let context = contextMap[activityIdent] ?? contextMap[parentIdent] else {
             rlock.unlock()
             return nil
         }
+
         contextValue = context[key.rawValue]
+
+        print("getCurrentContextValue(): contextValue: \(contextValue!)")
+
         rlock.unlock()
+
         return contextValue
     }
 
@@ -48,7 +57,8 @@ class ActivityContextManager: ContextManager {
         var parentIdent: os_activity_id_t = 0
         var activityIdent = os_activity_get_identifier(OS_ACTIVITY_CURRENT, &parentIdent)
 
-        print("seCurrentContextValue(): activityIdent: \(activityIdent)")
+        print("setCurrentContextValue(): OS_ACTIVITY_CURRENT: \(OS_ACTIVITY_CURRENT); parentIdent: \(parentIdent)")
+        print("setCurrentContextValue(): activityIdent: \(activityIdent)")
         
         rlock.lock()
 
@@ -75,7 +85,7 @@ class ActivityContextManager: ContextManager {
 
         var activityState = os_activity_scope_state_s()
 
-        print("createActivityContext(): activity: \(activity); activity id: \(currentActivityId)")
+        print("createActivityContext(): activity: \(activity); currentActivityId: \(currentActivityId); OS_ACTIVITY_CURRENT: \(OS_ACTIVITY_CURRENT)")
         
         os_activity_scope_enter(activity, &activityState)
 
@@ -85,7 +95,7 @@ class ActivityContextManager: ContextManager {
     func removeContextValue(forKey key: OpenTelemetryContextKeys, value: AnyObject) {
         let activityIdent = os_activity_get_identifier(OS_ACTIVITY_CURRENT, nil)
 
-        print("removeContextValue(): activityIdent: \(activityIdent)")
+        print("removeContextValue(): activityIdent: \(activityIdent); OS_ACTIVITY_CURRENT: \(OS_ACTIVITY_CURRENT)")
         
         rlock.lock()
 
@@ -102,6 +112,7 @@ class ActivityContextManager: ContextManager {
 
         if let scope = objectScope.object(forKey: value) {
             var scope = scope.scope
+            
             os_activity_scope_leave(&scope)
             objectScope.removeObject(forKey: value)
         }
