@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+#if os(macOS)
+
 import Foundation
 import os.activity
 
@@ -121,3 +123,5 @@ class ActivityContextManager: ContextManager {
         rlock.unlock()
     }
 }
+
+#endif

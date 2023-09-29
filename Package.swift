@@ -5,12 +5,6 @@ import PackageDescription
 
 let package = Package(
     name: "opentelemetry-swift",
-    platforms: [
-        .macOS(.v10_13),
-        .iOS(.v11),
-        .tvOS(.v11),
-        .linux(),
-    ],
     products: [
         .library(name: "OpenTelemetryApi", type: .static, targets: ["OpenTelemetryApi"]),
         .library(name: "OpenTelemetrySdk", type: .static, targets: ["OpenTelemetrySdk"]),
