@@ -47,14 +47,22 @@ class ActivityContextManager: ContextManager {
     func setCurrentContextValue(forKey key: OpenTelemetryContextKeys, value: AnyObject) {
         var parentIdent: os_activity_id_t = 0
         var activityIdent = os_activity_get_identifier(OS_ACTIVITY_CURRENT, &parentIdent)
+
+        print("seCurrentContextValue(): activity identifier: \(activityIdent)")
+        
         rlock.lock()
+
         if contextMap[activityIdent] == nil || contextMap[activityIdent]?[key.rawValue] != nil {
             var scope: os_activity_scope_state_s
+            
             (activityIdent, scope) = createActivityContext()
+
             contextMap[activityIdent] = [String: AnyObject]()
             objectScope.setObject(ScopeElement(scope: scope), forKey: value)
         }
+
         contextMap[activityIdent]?[key.rawValue] = value
+
         rlock.unlock()
     }
 
@@ -62,8 +70,13 @@ class ActivityContextManager: ContextManager {
         let dso = UnsafeMutableRawPointer(mutating: #dsohandle)
         let activity = _os_activity_create(dso, "ActivityContext", OS_ACTIVITY_CURRENT, OS_ACTIVITY_FLAG_DEFAULT)
         let currentActivityId = os_activity_get_identifier(activity, nil)
+
         var activityState = os_activity_scope_state_s()
+
+        print("createActivityContext(): activity: \(activity); activity id: \(currentActivityId)")
+        
         os_activity_scope_enter(activity, &activityState)
+
         return (currentActivityId, activityState)
     }
 
