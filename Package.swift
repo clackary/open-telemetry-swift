@@ -6,6 +6,7 @@ import PackageDescription
 let package = Package(
     name: "opentelemetry-swift",
     products: [
+        .library(name: "AppleTaskSupport", type: .static, targets: ["AppleTaskSupport"]),
         .library(name: "OpenTelemetryApi", type: .static, targets: ["OpenTelemetryApi"]),
         .library(name: "OpenTelemetrySdk", type: .static, targets: ["OpenTelemetrySdk"]),
         .library(name: "ResourceExtension", type: .static, targets: ["ResourceExtension"]),
@@ -39,12 +40,10 @@ let package = Package(
         .package(name: "Reachability.swift", url: "https://github.com/ashleymills/Reachability.swift", exact: "5.1.0"),
     ],
     targets: [
-      .systemLibrary(name: "Cucontext", pkgConfig: "libc"),
-
+      .target(name: "AppleTaskSupport",
+              dependencies: []),
       .target(name: "OpenTelemetryApi",
-              dependencies: [
-                .target(name: "Cucontext", condition: .when(platforms: [.linux])),
-              ]),
+              dependencies: ["AppleTaskSupport"]),
       .target(name: "OpenTelemetrySdk",
               dependencies: ["OpenTelemetryApi"]),
       .target(name: "ResourceExtension",
