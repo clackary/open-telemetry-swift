@@ -11,20 +11,11 @@ class ActivityContextManager: ContextManager {
     static let instance = ActivityContextManager()
 
     let taskSupport = TaskSupport.instance
-    let scopeElement = TaskSupport.scope
     
     let rlock = NSRecursiveLock()
 
-    class ScopeElement {
-        init(scope: os_activity_scope_state_s) {
-            self.scope = scope
-        }
-
-        var scope: os_activity_scope_state_s
-    }
-
     var objectScope = NSMapTable<AnyObject, ScopeElement>(keyOptions: .weakMemory, valueOptions: .strongMemory)
-    var contextMap = [os_activity_id_t: [String: AnyObject]]()
+    var contextMap = [task_identifier_t: [String: AnyObject]]()
 
     func getCurrentContextValue(forKey key: OpenTelemetryContextKeys) -> AnyObject? {
         var parentIdent: os_activity_id_t = 0

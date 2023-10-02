@@ -6,10 +6,12 @@
 import Foundation
 import os.activity
 
+typealias task_identifier_t = os_activity_t.self
+
 // Bridging Obj-C variabled defined as c-macroses. See `activity.h` header.
 
-private let OS_ACTIVITY_CURRENT = unsafeBitCast(dlsym(UnsafeMutableRawPointer(bitPattern: -2), "_os_activity_current"),
-                                                to: os_activity_t.self)
+private let OS_ACTIVITY_CURRENT = unsafeBitCast(dlsym(UnsafeMutableRawPointer(bitPattern: -2), "_os_activity_current"), to: task_identifier)
+
 @_silgen_name("_os_activity_create") private func _os_activity_create(_ dso: UnsafeRawPointer?,
                                                                       _ description: UnsafePointer<Int8>,
                                                                       _ parent: Unmanaged<AnyObject>?,
