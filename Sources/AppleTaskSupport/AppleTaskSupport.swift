@@ -15,8 +15,8 @@ private let OS_ACTIVITY_CURRENT = unsafeBitCast(dlsym(UnsafeMutableRawPointer(bi
                                                                       _ parent: Unmanaged<AnyObject>?,
                                                                       _ flags: os_activity_flag_t) -> AnyObject!
 
-public class TaskSupport {
-    static let instance = TaskSupport()
+public class AppleTaskSupport {
+    static let instance = AppleTaskSupport()
 
     class ScopeElement {
         init(scope: os_activity_scope_state_s) {
