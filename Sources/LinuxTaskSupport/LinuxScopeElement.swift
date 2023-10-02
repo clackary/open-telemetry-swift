@@ -5,14 +5,10 @@
 
 import Foundation
 
-public protocol ScopeElement {
-
-}
-
 public class LinuxScopeElement: ScopeElement {
-    var scope
+    var scope:Int = 0
 
     init() {
-
+        self.scope = 42
     }
 }

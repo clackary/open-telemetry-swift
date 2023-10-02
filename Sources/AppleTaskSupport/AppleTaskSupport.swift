@@ -16,16 +16,6 @@ private let OS_ACTIVITY_CURRENT = unsafeBitCast(dlsym(UnsafeMutableRawPointer(bi
                                                                       _ flags: os_activity_flag_t) -> AnyObject!
 
 public class AppleTaskSupport {
-    static let instance = AppleTaskSupport()
-
-    class ScopeElement {
-        init(scope: os_activity_scope_state_s) {
-            self.scope = scope
-        }
-
-        var scope: os_activity_scope_state_s
-    }
-
     public func getIdentifiers() -> AnyObject? {
         var parentIdent: os_activity_id_t = 0
 
@@ -39,7 +29,7 @@ public class AppleTaskSupport {
     }
     
     public func getScope() -> ScopeElement {
-        return AppleScopeElement(scope: scope)
+        return AppleScopeElement(scope: os_activity_scope_state_s)
     }
 
     func removeTaskSupport() {
