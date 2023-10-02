@@ -41,6 +41,7 @@ let package = Package(
       .package(name: "TaskSupport", path: "Sources/LinuxTaskSupport", when(platforms: [Linux])),
     ],
     targets: [
+      .target(name: "TaskSupport", dependencies: []),
       .target(name: "OpenTelemetryApi", dependencies: ["TaskSupport"]),
       .target(name: "OpenTelemetrySdk",
               dependencies: ["OpenTelemetryApi"]),
