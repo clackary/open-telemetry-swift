@@ -7,20 +7,25 @@ import Foundation
 
 #if os(Linux)
 import LinuxTaskSupport
+import LinuxScopeElement
 #else
 import AppleTaskSupport
+import AppleScopeElement
 #endif
 
-public protocol PlatformTaskSupport {
+protocol PlatformTaskSupport {
     func getIdentifiers() -> AnyObject?
     func getCurrentIdentifier() -> AnyObject?
+    func getScopeElement() -> ScopeElement
     func removeTaskSupport()
 }
 
 public class TaskSupport: PlatformTaskSupport {
     #if os(Linux)
     static let instance = LinuxTaskSupport()
+    static let scope = LinuxScopeElement()
     #else
     static let instance = AppleTaskSupport()
+    static let scope = AppleScopeElement()
     #endif
 }

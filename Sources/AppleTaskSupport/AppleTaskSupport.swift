@@ -39,7 +39,7 @@ public class AppleTaskSupport {
     }
     
     public func getScope() -> ScopeElement {
-        return ScopeElement(scope: scope)
+        return AppleScopeElement(scope: scope)
     }
 
     func removeTaskSupport() {

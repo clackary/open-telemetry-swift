@@ -3,23 +3,16 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
-
 import Foundation
-import os.activity
 
-// Bridging Obj-C variabled defined as c-macroses. See `activity.h` header.
-
-private let OS_ACTIVITY_CURRENT = unsafeBitCast(dlsym(UnsafeMutableRawPointer(bitPattern: -2), "_os_activity_current"),
-                                                to: os_activity_t.self)
-@_silgen_name("_os_activity_create") private func _os_activity_create(_ dso: UnsafeRawPointer?,
-                                                                      _ description: UnsafePointer<Int8>,
-                                                                      _ parent: Unmanaged<AnyObject>?,
-                                                                      _ flags: os_activity_flag_t) -> AnyObject!
+import TaskSupport
 
 class ActivityContextManager: ContextManager {
     static let instance = ActivityContextManager()
 
+    let taskSupport = TaskSupport.instance
+    let scopeElement = TaskSupport.scope
+    
     let rlock = NSRecursiveLock()
 
     class ScopeElement {
