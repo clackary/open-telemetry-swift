@@ -7,10 +7,8 @@ import Foundation
 
 #if os(Linux)
 import LinuxTaskSupport
-import LinuxScopeElement
 #else
 import AppleTaskSupport
-import AppleScopeElement
 #endif
 
 protocol PlatformTaskSupport {

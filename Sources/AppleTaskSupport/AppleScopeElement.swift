@@ -6,6 +6,10 @@
 import Foundation
 import os.activity
 
+public protocol ScopeElement {
+    var scope: ScopeElement { get }
+}
+
 public class AppleScopeElement: ScopeElement {
     var scope: os_activity_scope_state_s
 
