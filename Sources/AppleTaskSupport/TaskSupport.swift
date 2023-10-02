@@ -44,21 +44,6 @@ public class TaskSupport {
         return ScopeElement(scope: scope)
     }
 
-    fileprivate func createScope() -> (os_activity_t, os_activity_scope_state_s) {
-        let dso = UnsafeMutableRawPointer(mutating: #dsohandle)
-        let activity = _os_activity_create(dso, "ActivityContext", OS_ACTIVITY_CURRENT, OS_ACTIVITY_FLAG_DEFAULT)
-        let currentActivityId = os_activity_get_identifier(activity, nil)
-
-        var activityState = os_activity_scope_state_s()
-
-        print("createTaskSupport(): activityState: \(activityState)")
-        print("createTaskSupport(): activity: \(activity); currentActivityId: \(currentActivityId); OS_ACTIVITY_CURRENT: \(OS_ACTIVITY_CURRENT)")
-        
-        os_activity_scope_enter(activity, &activityState)
-
-        return (currentActivityId, activityState)
-    }
-
     func removeTaskSupport() {
         if let scope = objectScope.object(forKey: value) {
             var scope = scope.scope
@@ -66,6 +51,21 @@ public class TaskSupport {
             os_activity_scope_leave(&scope)
             objectScope.removeObject(forKey: value)
         }
+    }
+
+    fileprivate func createScope() -> (os_activity_scope_state_s) {
+        let dso = UnsafeMutableRawPointer(mutating: #dsohandle)
+        let activity = _os_activity_create(dso, "ActivityContext", OS_ACTIVITY_CURRENT, OS_ACTIVITY_FLAG_DEFAULT)
+        let currentActivityId = os_activity_get_identifier(activity, nil)
+
+        var activityState = os_activity_scope_state_s()
+
+        print("createScope(): activityState: \(activityState)")
+        print("createScope(): activity: \(activity); currentActivityId: \(currentActivityId); OS_ACTIVITY_CURRENT: \(OS_ACTIVITY_CURRENT)")
+        
+        os_activity_scope_enter(activity, &activityState)
+
+        return (currentActivityId, activityState)
     }
 }
 
