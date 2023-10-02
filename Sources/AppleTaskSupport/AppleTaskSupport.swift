@@ -3,8 +3,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
-
 import Foundation
 import os.activity
 
@@ -68,5 +66,3 @@ public class TaskSupport {
         return (currentActivityId, activityState)
     }
 }
-
-#endif

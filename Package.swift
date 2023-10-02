@@ -41,8 +41,8 @@ let package = Package(
       .package(name: "Reachability.swift", url: "https://github.com/ashleymills/Reachability.swift", exact: "5.1.0"),
     ],
     targets: [
-      .target(name: "AppleTaskSupport",
-              dependencies: []),
+      .target(name: "AppleTaskSupport", dependencies: [], when(platforms: [macOS, iOS, tvOS, watchOS])),
+      .target(name: "LinuxTaskSupport", dependencies: [], when(platforms: [Linux])),
       .target(name: "OpenTelemetryApi",
               dependencies: ["AppleTaskSupport"]),
       .target(name: "OpenTelemetrySdk",
