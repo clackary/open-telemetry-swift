@@ -18,12 +18,7 @@ private let OS_ACTIVITY_CURRENT = unsafeBitCast(dlsym(UnsafeMutableRawPointer(bi
                                                                       _ flags: os_activity_flag_t) -> AnyObject!
 
 public class AppleTaskSupport {
-    let rlock = NSRecursiveLock()
-
-    var objectScope = NSMapTable<AnyObject, AppleScopeElement>(keyOptions: .weakMemory, valueOptions: .strongMemory)
-    var contextMap = [os_activity_id_t: [String: AnyObject]]()
-
-    public func getIdentifiers() -> (os_activity_id_t, os_activity_id_t)? {
+    public func getIdentifiers() -> (os_activity_id_t, os_activity_id_t) {
         var parentIdent: os_activity_id_t = 0
 
         let activityIdent = os_activity_get_identifier(OS_ACTIVITY_CURRENT, &parentIdent)
@@ -31,30 +26,26 @@ public class AppleTaskSupport {
         return (activityIdent, parentIdent)
     }
 
-    public func getCurrentIdentifier() -> os_activity_id_t? {
+    public func getCurrentIdentifier() -> os_activity_id_t {
         return os_activity_get_identifier(OS_ACTIVITY_CURRENT, nil)
-        
-    }
-    
-    public func getScope() -> ScopeElement {
-        let (_, scopeState) = createAcitivityContext()
-        
-        return AppleScopeElement(scope: scopeState)
     }
 
-    fileprivate func createAcitivityContext() -> (os_activity_id_t, os_activity_scope_state_s) {
+    public func createActivityContext() -> (os_activity_id_t, ScopeElement) {
         let dso = UnsafeMutableRawPointer(mutating: #dsohandle)
         let activity = _os_activity_create(dso, "ActivityContext", OS_ACTIVITY_CURRENT, OS_ACTIVITY_FLAG_DEFAULT)
         let currentActivityId = os_activity_get_identifier(activity, nil)
 
         var activityState = os_activity_scope_state_s()
 
-        print("createScope(): activityState: \(activityState)")
-        print("createScope(): activity: \(activity); currentActivityId: \(currentActivityId); OS_ACTIVITY_CURRENT: \(OS_ACTIVITY_CURRENT)")
-        
         os_activity_scope_enter(activity, &activityState)
 
-        return (currentActivityId, activityState)
+        return (currentActivityId, ScopeElement(scope: activityState))
+    }
+
+    public func leaveScope(scope: ScopeElement) {
+        let sid: os_activity_scope_state_s = scope.getScopeState()
+
+        os_activity_scope_leave(&scope)
     }
 }
 
