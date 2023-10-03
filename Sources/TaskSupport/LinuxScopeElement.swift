@@ -5,6 +5,8 @@
 
 import Foundation
 
+#if os(Linux)
+
 public class LinuxScopeElement: ScopeElement {
     var scope:Int = 0
 
@@ -12,3 +14,5 @@ public class LinuxScopeElement: ScopeElement {
         self.scope = 42
     }
 }
+
+#endif

@@ -6,8 +6,6 @@ import PackageDescription
 let package = Package(
     name: "opentelemetry-swift",
     products: [
-      .library(name: "AppleTaskSupport", targets: ["AppleTaskSupport"], when(platforms: [macOS, iOS, tvOS, watchOS])),
-      .library(name: "LinuxTaskSupport", targets: ["LinuxTaskSupport"], when(platforms: [Linux])),
       .library(name: "TaskSupport", targets: ["TaskSupport"]),
       .library(name: "OpenTelemetryApi", type: .static, targets: ["OpenTelemetryApi"]),
       .library(name: "OpenTelemetrySdk", type: .static, targets: ["OpenTelemetrySdk"]),
@@ -40,15 +38,10 @@ let package = Package(
       .package(name: "swift-log", url: "https://github.com/apple/swift-log.git", exact: "1.4.4"),
       .package(name: "swift-metrics", url: "https://github.com/apple/swift-metrics.git", exact: "2.1.1"),
       .package(name: "Reachability.swift", url: "https://github.com/ashleymills/Reachability.swift", exact: "5.1.0"),
-      .package(name: "AppleTaskSupport", path: "Sources/AppleTaskSupport", when(platforms: [macOS, iOS, tvOS, watchOS])),
-      .package(name: "LinuxTaskSupport", path: "Sources/LinuxTaskSupport", when(platforms: [Linux])),
       .package(name: "TaskSupport", path: "Sources/TaskSupport"),
     ],
     targets: [
-      .target(name: "AppleTaskSupport", dependencies: [], when(platforms: [macOS, iOS, tvOS, watchOS])),
-      .target(name: "LinuxTaskSupport", dependencies: [], when(platforms: [Linux])),
-      .target(name: "TaskSupport", dependencies: ["AppleTaskSupport"], when(platforms: [macOS, iOS, tvOS, watchOS])),
-      .target(name: "TaskSupport", dependencies: ["LinuxTaskSupport"], when(platforms: [Linux])),
+      .target(name: "TaskSupport", dependencies: []),
       .target(name: "OpenTelemetryApi", dependencies: ["TaskSupport"]),
       .target(name: "OpenTelemetrySdk",
               dependencies: ["OpenTelemetryApi"]),
