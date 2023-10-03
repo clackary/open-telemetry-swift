@@ -11,7 +11,7 @@ import LinuxTaskSupport
 import AppleTaskSupport
 #endif
 
-protocol PlatformTaskSupport {
+public protocol PlatformTaskSupport {
     func getIdentifiers() -> AnyObject?
     func getCurrentIdentifier() -> AnyObject?
     func getScopeElement() -> ScopeElement

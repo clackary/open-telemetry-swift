@@ -6,9 +6,9 @@ import PackageDescription
 let package = Package(
     name: "opentelemetry-swift",
     products: [
-      .library(name: "AppleTaskSupport", type: .static, targets: ["AppleTaskSupport"], when(platforms: [macOS, iOS, tvOS, watchOS])),
-      .library(name: "LinuxTaskSupport", type: .static, targets: ["LinuxTaskSupport"], when(platforms: [Linux])),
-      .library(name: "TaskSupport", type: .static, targets: ["TaskSupport"]),
+      .library(name: "AppleTaskSupport", targets: ["AppleTaskSupport"], when(platforms: [macOS, iOS, tvOS, watchOS])),
+      .library(name: "LinuxTaskSupport", targets: ["LinuxTaskSupport"], when(platforms: [Linux])),
+      .library(name: "TaskSupport", targets: ["TaskSupport"]),
       .library(name: "OpenTelemetryApi", type: .static, targets: ["OpenTelemetryApi"]),
       .library(name: "OpenTelemetrySdk", type: .static, targets: ["OpenTelemetrySdk"]),
       .library(name: "ResourceExtension", type: .static, targets: ["ResourceExtension"]),

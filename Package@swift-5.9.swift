@@ -6,6 +6,9 @@ import PackageDescription
 let package = Package(
   name: "opentelemetry-swift",
   products: [
+    .library(name: "AppleTaskSupport", targets: ["AppleTaskSupport"], when(platforms: [macOS, iOS, tvOS, watchOS])),
+    .library(name: "LinuxTaskSupport", targets: ["LinuxTaskSupport"], when(platforms: [Linux])),
+    .library(name: "TaskSupport", targets: ["TaskSupport"]),
     .library(name: "OpenTelemetryApi", type: .static, targets: ["OpenTelemetryApi"]),
     .library(name: "OpenTelemetrySdk", type: .static, targets: ["OpenTelemetrySdk"]),
     .library(name: "ResourceExtension", type: .static, targets: ["ResourceExtension"]),
@@ -36,15 +39,17 @@ let package = Package(
     .package(url: "https://github.com/apple/swift-protobuf.git", from: "1.20.2"),
     .package(url: "https://github.com/apple/swift-log.git", from: "1.4.4"),
     .package(url: "https://github.com/apple/swift-metrics.git", from: "2.1.1"),
-    .package(url: "https://github.com/ashleymills/Reachability.swift", from: "5.1.0")
+    .package(url: "https://github.com/ashleymills/Reachability.swift", from: "5.1.0"),
+    .package(name: "AppleTaskSupport", path: "Sources/AppleTaskSupport", when(platforms: [macOS, iOS, tvOS, watchOS])),
+    .package(name: "LinuxTaskSupport", path: "Sources/LinuxTaskSupport", when(platforms: [Linux])),
+    .package(name: "TaskSupport", path: "Sources/TaskSupport"),
   ],
   targets: [
-    .systemLibrary(name: "Cucontext", pkgConfig: "libc"),
-    
-    .target(name: "OpenTelemetryApi",
-            dependencies: [
-              .target(name: "Cucontext", condition: .when(platforms: [.linux])),
-            ]),
+    .target(name: "AppleTaskSupport", dependencies: [], when(platforms: [macOS, iOS, tvOS, watchOS])),
+    .target(name: "LinuxTaskSupport", dependencies: [], when(platforms: [Linux])),
+    .target(name: "TaskSupport", dependencies: ["AppleTaskSupport"], when(platforms: [macOS, iOS, tvOS, watchOS])),
+    .target(name: "TaskSupport", dependencies: ["LinuxTaskSupport"], when(platforms: [Linux])),
+    .target(name: "OpenTelemetryApi", dependencies: ["TaskSupport"]),
     .target(name: "OpenTelemetrySdk",
             dependencies: ["OpenTelemetryApi"]),
     .target(name: "ResourceExtension",
