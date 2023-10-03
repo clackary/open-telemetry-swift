@@ -5,25 +5,66 @@
 
 import Foundation
 
-#if os(Linux)
-import LinuxTaskSupport
+#if os(iOS) || os(macOS) || os(tvOS)
+
+import os.activity
+
+public typealias activity_id_t = os_activity_id_t
+public typealias activity_scope_state_s = os_activity_scope_state_s
+
 #else
-import AppleTaskSupport
+
+public typealias activity_id_t = UInt64
+public typealias activity_scope_state_s = UInt64  // this is an opaque structure on MacOS
+
 #endif
 
 public protocol PlatformTaskSupport {
-    func getIdentifiers() -> AnyObject?
-    func getCurrentIdentifier() -> AnyObject?
-    func getScopeElement() -> ScopeElement
+    func getIdentifiers() -> (activity_id_t, activity_id_t)?
+    func getCurrentIdentifier() -> activity_id_t
+    func getScopeElement() -> activity_scope_state_s?
     func removeTaskSupport()
 }
 
 public class TaskSupport: PlatformTaskSupport {
-    #if os(Linux)
-    static let instance = LinuxTaskSupport()
-    static let scope = LinuxScopeElement()
+    #if os(iOS) || os(macOS) || os(tvOS)    
+    public static let instance = AppleTaskSupport()
+
+    public func getIdentifiers() -> (activity_id_t, activity_id_t)? {
+        return nil
+    }
+
+    public func getCurrentIdentifier() -> activity_id_t {
+        return 0
+    }
+
+    public func getScopeElement() -> activity_scope_state_s? {
+        return nil
+    }
+
+    public func removeTaskSupport() {
+
+    }
+
     #else
-    static let instance = AppleTaskSupport()
-    static let scope = AppleScopeElement()
+    
+    public static let instance = LinuxTaskSupport()
+
+    public func getIdentifiers() -> (activity_id_t, activity_id_t)? {
+        return nil
+    }
+
+    public func getCurrentIdentifier() -> activity_id_t {
+        return 0
+    }
+
+    public func getScopeElement() -> activity_scope_state_s? {
+        return nil
+    }
+
+    public func removeTaskSupport() {
+
+    }
+
     #endif
 }

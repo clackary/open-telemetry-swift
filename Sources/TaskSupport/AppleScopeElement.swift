@@ -8,14 +8,20 @@
 import Foundation
 import os.activity
 
+public typealias scope_state_s = os_activity_scope_state_s
+
 public protocol ScopeElement {
-    var scope: ScopeElement { get }
+    func getScopeState() -> scope_state_s
 }
 
 public class AppleScopeElement: ScopeElement {
-    var scope: os_activity_scope_state_s
+    var scope: scope_state_s
 
-    init(scope: os_activity_scope_state_s) {
+    public func getScopeState() -> scope_state_s {
+        return scope
+    }
+    
+    init(scope: scope_state_s) {
         self.scope = scope
     }
 }

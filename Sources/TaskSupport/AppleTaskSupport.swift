@@ -8,11 +8,9 @@
 import Foundation
 import os.activity
 
-typealias task_identifier_t = os_activity_t.self
-
 // Bridging Obj-C variabled defined as c-macroses. See `activity.h` header.
 
-private let OS_ACTIVITY_CURRENT = unsafeBitCast(dlsym(UnsafeMutableRawPointer(bitPattern: -2), "_os_activity_current"), to: task_identifier)
+private let OS_ACTIVITY_CURRENT = unsafeBitCast(dlsym(UnsafeMutableRawPointer(bitPattern: -2), "_os_activity_current"), to: os_activity_t.self)
 
 @_silgen_name("_os_activity_create") private func _os_activity_create(_ dso: UnsafeRawPointer?,
                                                                       _ description: UnsafePointer<Int8>,
@@ -20,7 +18,7 @@ private let OS_ACTIVITY_CURRENT = unsafeBitCast(dlsym(UnsafeMutableRawPointer(bi
                                                                       _ flags: os_activity_flag_t) -> AnyObject!
 
 public class AppleTaskSupport {
-    public func getIdentifiers() -> AnyObject? {
+    public func getIdentifiers() -> (os_activity_id_t, os_activity_id_t)? {
         var parentIdent: os_activity_id_t = 0
 
         let activityIdent = os_activity_get_identifier(OS_ACTIVITY_CURRENT, &parentIdent)
@@ -28,8 +26,9 @@ public class AppleTaskSupport {
         return (activityIdent, parentIdent)
     }
 
-    public func getCurrentIdentifier() -> AnyObject? {
+    public func getCurrentIdentifier() -> os_activity_id_t? {
         return os_activity_get_identifier(OS_ACTIVITY_CURRENT, nil)
+        
     }
     
     public func getScope() -> ScopeElement {
