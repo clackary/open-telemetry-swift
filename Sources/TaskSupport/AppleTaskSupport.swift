@@ -43,9 +43,9 @@ public class AppleTaskSupport {
     }
 
     public func leaveScope(scope: ScopeElement) {
-        let sid: os_activity_scope_state_s = scope.getScopeState()
+        var sid: os_activity_scope_state_s = scope.getScopeState()
 
-        os_activity_scope_leave(&scope)
+        os_activity_scope_leave(&sid)
     }
 }
 

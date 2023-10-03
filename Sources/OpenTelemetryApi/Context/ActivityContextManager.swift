@@ -73,7 +73,7 @@ class ActivityContextManager: ContextManager {
         }
 
         if let scope = objectScope.object(forKey: value) {
-            TaskSupport.instance.leaveScope(scope)
+            TaskSupport.instance.leaveScope(scope: scope)
             objectScope.removeObject(forKey: value)
         }
 
