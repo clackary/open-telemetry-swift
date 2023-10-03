@@ -18,6 +18,11 @@ private let OS_ACTIVITY_CURRENT = unsafeBitCast(dlsym(UnsafeMutableRawPointer(bi
                                                                       _ flags: os_activity_flag_t) -> AnyObject!
 
 public class AppleTaskSupport {
+    let rlock = NSRecursiveLock()
+
+    var objectScope = NSMapTable<AnyObject, AppleScopeElement>(keyOptions: .weakMemory, valueOptions: .strongMemory)
+    var contextMap = [os_activity_id_t: [String: AnyObject]]()
+
     public func getIdentifiers() -> (os_activity_id_t, os_activity_id_t)? {
         var parentIdent: os_activity_id_t = 0
 
@@ -32,19 +37,12 @@ public class AppleTaskSupport {
     }
     
     public func getScope() -> ScopeElement {
-        return AppleScopeElement(scope: os_activity_scope_state_s)
+        let (_, scopeState) = createAcitivityContext()
+        
+        return AppleScopeElement(scope: scopeState)
     }
 
-    func removeTaskSupport() {
-        if let scope = objectScope.object(forKey: value) {
-            var scope = scope.scope
-            
-            os_activity_scope_leave(&scope)
-            objectScope.removeObject(forKey: value)
-        }
-    }
-
-    fileprivate func createScope() -> (os_activity_scope_state_s) {
+    fileprivate func createAcitivityContext() -> (os_activity_id_t, os_activity_scope_state_s) {
         let dso = UnsafeMutableRawPointer(mutating: #dsohandle)
         let activity = _os_activity_create(dso, "ActivityContext", OS_ACTIVITY_CURRENT, OS_ACTIVITY_FLAG_DEFAULT)
         let currentActivityId = os_activity_get_identifier(activity, nil)
