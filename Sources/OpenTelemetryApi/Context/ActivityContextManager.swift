@@ -34,8 +34,6 @@ class ActivityContextManager: ContextManager {
 
         contextValue = context[key.rawValue]
 
-        print("getCurrentContextValue(): contextValue: \(contextValue!)")
-
         return contextValue
     }
 
