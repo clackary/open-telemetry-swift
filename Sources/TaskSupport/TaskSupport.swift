@@ -19,14 +19,7 @@ public typealias activity_scope_state_s = UInt64  // this is an opaque structure
 
 #endif
 
-public protocol PlatformTaskSupport {
-    func getIdentifiers() -> (activity_id_t, activity_id_t)
-    func getCurrentIdentifier() -> activity_id_t
-    func createActivityContext() -> (activity_id_t, ScopeElement)
-    func leaveScope(scope: ScopeElement)
-}
-
-public class TaskSupport: PlatformTaskSupport {
+public class TaskSupport {
     #if os(iOS) || os(macOS) || os(tvOS)    
     static public let instance = AppleTaskSupport()
     #else
