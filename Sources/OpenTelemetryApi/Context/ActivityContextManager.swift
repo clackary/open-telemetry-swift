@@ -23,6 +23,10 @@ class ActivityContextManager: ContextManager {
 
         rlock.lock()
 
+        defer {
+            rlock.unlock()
+        }
+        
         guard let context = contextMap[activityIdent] ?? contextMap[parentIdent] else {
             rlock.unlock()
             return nil
@@ -31,8 +35,6 @@ class ActivityContextManager: ContextManager {
         contextValue = context[key.rawValue]
 
         print("getCurrentContextValue(): contextValue: \(contextValue!)")
-
-        rlock.unlock()
 
         return contextValue
     }
@@ -44,6 +46,10 @@ class ActivityContextManager: ContextManager {
         
         rlock.lock()
 
+        defer {
+            rlock.unlock()
+        }
+        
         if contextMap[activityIdent] == nil || contextMap[activityIdent]?[key.rawValue] != nil {
             let (activityIdent, scope) = TaskSupport.instance.createActivityContext()
 
@@ -52,8 +58,6 @@ class ActivityContextManager: ContextManager {
         }
 
         contextMap[activityIdent]?[key.rawValue] = value
-
-        rlock.unlock()
     }
 
     func removeContextValue(forKey key: OpenTelemetryContextKeys, value: AnyObject) {
@@ -61,6 +65,10 @@ class ActivityContextManager: ContextManager {
         
         rlock.lock()
 
+        defer {
+            rlock.unlock()
+        }
+        
         if let currentValue = contextMap[activityIdent]?[key.rawValue],
            currentValue === value {
             contextMap[activityIdent]?[key.rawValue] = nil
@@ -76,7 +84,5 @@ class ActivityContextManager: ContextManager {
             TaskSupport.instance.leaveScope(scope: scope)
             objectScope.removeObject(forKey: value)
         }
-
-        rlock.unlock()
     }
 }
