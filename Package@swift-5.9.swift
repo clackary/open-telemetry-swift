@@ -41,12 +41,13 @@ let package = Package(
     .package(name: "TaskSupport", path: "Sources/TaskSupport"),
   ],
   targets: [
-    .systemLibrary(name: "libpthread"),
-    .target(name: "TaskSupport",
-            dependencies: [
-              .target(name: "libpthread", condition: .when(platforms: [.linux])),
-            ]
-    ),
+    // .systemLibrary(name: "libpthread"),
+    // .target(name: "TaskSupport",
+    //         dependencies: [
+    //           .target(name: "libpthread", condition: .when(platforms: [.linux])),
+    //         ]
+    // ),
+    .target(name: "TaskSupport", dependencies: []),
     .target(name: "OpenTelemetryApi", dependencies: ["TaskSupport"]),
     .target(name: "OpenTelemetrySdk",
             dependencies: ["OpenTelemetryApi"]),

@@ -40,12 +40,13 @@ let package = Package(
       .package(url: "https://github.com/ashleymills/Reachability.swift", from: "5.1.0"),
     ],
     targets: [
-      .systemLibrary(name: "libpthread"),
-      .target(name: "TaskSupport",
-              dependencies: [
-                .target(name: "libpthread", condition: .when(platforms: [.linux])),
-              ]
-      ),
+      // .systemLibrary(name: "libpthread"),
+      // .target(name: "TaskSupport",
+      //         dependencies: [
+      //           .target(name: "libpthread", condition: .when(platforms: [.linux])),
+      //         ]
+      // ),
+      .target(name: "TaskSupport", dependencies: []),
       .target(name: "OpenTelemetryApi", dependencies: ["TaskSupport"]),
       .target(name: "OpenTelemetrySdk",
               dependencies: ["OpenTelemetryApi"]),

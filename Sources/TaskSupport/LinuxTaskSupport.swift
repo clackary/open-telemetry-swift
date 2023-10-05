@@ -14,7 +14,7 @@
 
 import Foundation
 
-import libpthread
+// import libpthread
 
 typealias task_identifier_t = UInt64
 typealias activity_id_t = UInt64
