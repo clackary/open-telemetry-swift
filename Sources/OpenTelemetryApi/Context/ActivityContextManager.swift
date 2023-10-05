@@ -28,7 +28,6 @@ class ActivityContextManager: ContextManager {
         }
         
         guard let context = contextMap[activityIdent] ?? contextMap[parentIdent] else {
-            rlock.unlock()
             return nil
         }
 

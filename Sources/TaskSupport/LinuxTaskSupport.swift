@@ -11,6 +11,10 @@ typealias task_identifier_t = UInt64
 typealias activity_id_t = UInt64
 
 public class LinuxTaskSupport {
+    enum TaskScope {
+        @TaskLocal static var identifier: UUID? = nil
+    }
+
     public func getIdentifiers() -> (task_identifier_t, activity_id_t) {
         return (0, 0)
     }
