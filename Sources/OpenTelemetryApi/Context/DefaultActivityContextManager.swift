@@ -40,7 +40,7 @@ class DefaultActivityContextManager: ContextManager {
         }
 
         if contextMap[keyVal] == nil {
-            contextMap[keyVal] = [String: AnyObject]()
+            contextMap = [String: AnyObject]()
         }
 
         contextMap[keyVal]? = value
