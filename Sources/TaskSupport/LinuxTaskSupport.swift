@@ -3,10 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-// This class represents what is supposed to be the equivalent of Apple's os.activity library. Except
-// that there is no such beast in existence. The best advice I've received thus far was from a very
+// This class represents what is supposed to be the Linux equivalent of Apple's os.activity library.
+// Except that there is no such beast in existence. The best advice I've received thus far was from a very
 // experienced MacOS developer, who strongly urged we not attempt to re-create that library for Linux.
-// Just make this class a giant no-op.
+// For now, we'll see if libpthread is sufficient. Trouble is, Swift concurrency - async/await (Tasks) -
+// can apparently span threads on occasion, which means pthread_self() will not always be reliable.
+// Testing will reveal whether or not this will work for our needs.
 
 #if os(Linux)
 
