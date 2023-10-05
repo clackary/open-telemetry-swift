@@ -19,7 +19,10 @@ class ActivityContextManager: ContextManager {
         let (activityIdent, parentIdent) = TaskSupport.instance.getIdentifiers()
         var contextValue: AnyObject?
 
-        print("getCurrentContextValue(): key: \(key); activityIdent: \(activityIdent)")
+        print("ActivityContextManager.getCurrentContextValue():")
+        print("  key: \(key)")
+        print("  activityIdent: \(activityIdent)")
+        print("  parentIdent: \(parentIdent)")
 
         rlock.lock()
 
@@ -28,8 +31,12 @@ class ActivityContextManager: ContextManager {
         }
         
         guard let context = contextMap[activityIdent] ?? contextMap[parentIdent] else {
+            print("  contextMap: no item for activityIdent: returning nil")
+            
             return nil
         }
+
+        print("  context: \(context)")
 
         contextValue = context[key.rawValue]
 
@@ -39,7 +46,10 @@ class ActivityContextManager: ContextManager {
     func setCurrentContextValue(forKey key: OpenTelemetryContextKeys, value: AnyObject) {
         let (activityIdent, _) = TaskSupport.instance.getIdentifiers()
 
-        print("setCurrentContextValue(): activityIdent: \(activityIdent)")
+        print("ActivityContextManager.setCurrentContextValue():")
+        print("  key: \(key)")
+        print("  value: \(value)")
+        print("  activityIdent: \(activityIdent)")
         
         rlock.lock()
 
@@ -49,6 +59,9 @@ class ActivityContextManager: ContextManager {
         
         if contextMap[activityIdent] == nil || contextMap[activityIdent]?[key.rawValue] != nil {
             let (activityIdent, scope) = TaskSupport.instance.createActivityContext()
+
+            print("ActivityContextManager.setCurrentContextValue(): context map: no item at index: \(activityIdent): initializing:")
+            print("  scope: \(scope)")
 
             contextMap[activityIdent] = [String: AnyObject]()
             objectScope.setObject(scope, forKey: value)
@@ -62,15 +75,20 @@ class ActivityContextManager: ContextManager {
         
         rlock.lock()
 
+        print("ActivityContextManager.removeContextValue():")
+        print("  key: \(key)")
+        print("  value: \(value)")
+        print("  activityIdent: \(activityIdent)")
+
         defer {
             rlock.unlock()
         }
         
         if let currentValue = contextMap[activityIdent]?[key.rawValue],
            currentValue === value {
+            print("  contextMap[activityIdent]: \(currentValue)")
+            
             contextMap[activityIdent]?[key.rawValue] = nil
-
-            print("removeContextValue() key: \(key.rawValue)")
 
             if contextMap[activityIdent]?.isEmpty ?? false {
                 contextMap[activityIdent] = nil
@@ -78,6 +96,8 @@ class ActivityContextManager: ContextManager {
         }
 
         if let scope = objectScope.object(forKey: value) {
+            print("  leaving scope: \(scope)")
+            
             TaskSupport.instance.leaveScope(scope: scope)
             objectScope.removeObject(forKey: value)
         }
