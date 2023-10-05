@@ -18,19 +18,18 @@ typealias task_identifier_t = UInt64
 typealias activity_id_t = UInt64
 
 public class LinuxTaskSupport {
-    let defaultActivity: task_identifier_t = 1
     let parentActivity: activity_id_t = 0
     
     public func getIdentifiers() -> (task_identifier_t, activity_id_t) {
-        return (defaultActivity, parentActivity)
+        return (pthread_self(), parentActivity)
     }
 
     public func getCurrentIdentifier() -> activity_id_t {
-        return defaultActivity
+        return pthread_self()
     }
 
     public func createActivityContext() -> (activity_id_t, ScopeElement) {
-        return (defaultActivity, ScopeElement(scope: defaultActivity))
+        return (getCurrentIdentifier(), ScopeElement(scope: defaultActivity))
     }
 
     public func leaveScope(scope: ScopeElement) {
