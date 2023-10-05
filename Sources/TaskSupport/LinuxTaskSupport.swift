@@ -16,9 +16,6 @@ import Foundation
 
 // import libpthread
 
-typealias task_identifier_t = UInt64
-typealias activity_id_t = UInt64
-
 public class LinuxTaskSupport {
     let parentActivity: activity_id_t = 0
     
@@ -34,7 +31,7 @@ public class LinuxTaskSupport {
         return (getCurrentIdentifier(), ScopeElement(scope: defaultActivity))
     }
 
-    public func leaveScope(scope: ScopeElement) {
+    public func leaveScope(scope: AnyObject) {
         // "scopes" are an os.activity concept; this function is a no-op on Linux
     }
 }

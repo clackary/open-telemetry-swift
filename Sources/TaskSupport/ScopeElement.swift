@@ -19,5 +19,4 @@ public class ScopeElement {
         self.scope = scope
     }
 }
-
 #endif
