@@ -35,7 +35,7 @@ public class LinuxTaskSupport {
     }
 
     public func leaveScope(scope: ScopeElement) {
-        // no-op
+        // "scopes" are an os.activity concept; this function is a no-op on Linux
     }
 }
 
