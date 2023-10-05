@@ -3,6 +3,9 @@
 // SPDX-License-Identifier: Apache-2.0
 // 
 
+// NB: This class needs portability work for Linux. Currently, on that platform log messages are written
+// to stdout. Syslog would be nice, but not every distribution uses it.
+
 import Foundation
 import OpenTelemetryApi
 
@@ -33,14 +36,14 @@ public class LoggerSdk : OpenTelemetryApi.Logger {
                 .build()
                 .eventBuilder(name: "unused")
         }
-        return LogRecordBuilderSdk(sharedState: sharedState, instrumentationScope: instrumentationScope, includeSpanContext: true).setAttributes(["event.domain": AttributeValue.string(eventDomain),
-                                                                                                                                                  "event.name": AttributeValue.string(name)])
+
+        return LogRecordBuilderSdk(sharedState: sharedState, instrumentationScope: instrumentationScope, includeSpanContext: true)
+            .setAttributes(["event.domain": AttributeValue.string(eventDomain), "event.name": AttributeValue.string(name)])
     }
     
     public func logRecordBuilder() -> OpenTelemetryApi.LogRecordBuilder {
         return LogRecordBuilderSdk(sharedState: sharedState, instrumentationScope: instrumentationScope, includeSpanContext: true)
     }
-    
     
     func withEventDomain(domain: String) -> LoggerSdk {
         if eventDomain == domain {
