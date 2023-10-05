@@ -9,29 +9,33 @@
 
 import Foundation
 
+import TaskSupport
+
 class DefaultActivityContextManager: ContextManager {
     static let instance = DefaultActivityContextManager()
 
     let rlock = NSRecursiveLock()
 
-    var contextMap = [String: AnyObject]()
+    var contextMap = [activity_id_t: [String: AnyObject]]()
 
     func getCurrentContextValue(forKey key: OpenTelemetryContextKeys) -> AnyObject? {
+        let (activityIdent, parentIdent) = TaskSupport.instance.getIdentifiers()
+
         rlock.lock()
 
         defer {
             rlock.unlock()
         }
 
-        guard let contextValue = contextMap[key.rawValue] else {
+        guard let context = contextMap[activityIdent] ?? contextMap[parentIdent] else {
             return nil
         }
 
-        return contextValue
+        return context[key.rawValue]
     }
 
     func setCurrentContextValue(forKey key: OpenTelemetryContextKeys, value: AnyObject) {
-        let keyVal = key.rawValue
+        let (activityIdent, _) = TaskSupport.instance.getIdentifiers()
         
         rlock.lock()
 
@@ -39,28 +43,29 @@ class DefaultActivityContextManager: ContextManager {
             rlock.unlock()
         }
 
-        if contextMap[keyVal] == nil {
-            contextMap = [String: AnyObject]()
+        if contextMap[activityIdent] == nil || contextMap[activityIdent]?[key.rawValue] != nil {
+            let (activityIdent, _) = TaskSupport.instance.createActivityContext()
+
+            contextMap[activityIdent] = [String: AnyObject]()
         }
 
-        contextMap[keyVal]? = value
+        contextMap[activityIdent]?[key.rawValue] = value
     }
 
     func removeContextValue(forKey key: OpenTelemetryContextKeys, value: AnyObject) {
-        let keyVal = key.rawValue
+        let activityIdent = TaskSupport.instance.getCurrentIdentifier()
         
         rlock.lock()
 
         defer {
             rlock.unlock()
         }
+        
+        if let currentValue = contextMap[activityIdent]?[key.rawValue], currentValue === value {
+            contextMap[activityIdent]?[key.rawValue] = nil
 
-        if let currentValue = contextMap[keyVal],
-           currentValue === value {
-            contextMap[keyVal] = nil
-
-            if contextMap[keyVal]?.isEmpty ?? false {
-                contextMap[keyVal] = nil
+            if contextMap[activityIdent]?.isEmpty ?? false {
+                contextMap[activityIdent] = nil
             }
         }
     }
