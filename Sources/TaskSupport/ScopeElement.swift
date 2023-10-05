@@ -19,4 +19,20 @@ public class ScopeElement {
         self.scope = scope
     }
 }
+
+#else
+
+public typealias os_activity_scope_state_s = UInt64
+
+public class ScopeElement {
+    public func getScopeState() -> os_activity_scope_state_s {
+        return 0
+    }
+
+    init(scope: os_activity_scope_state_s) {
+
+    }
+}
+
 #endif
+    

@@ -19,7 +19,7 @@ import Foundation
 public class LinuxTaskSupport {
     let parentActivity: activity_id_t = 0
     
-    public func getIdentifiers() -> (task_identifier_t, activity_id_t) {
+    public func getIdentifiers() -> (activity_id_t, activity_id_t) {
         return (pthread_self(), parentActivity)
     }
 
@@ -28,10 +28,10 @@ public class LinuxTaskSupport {
     }
 
     public func createActivityContext() -> (activity_id_t, ScopeElement) {
-        return (getCurrentIdentifier(), ScopeElement(scope: defaultActivity))
+        return (getCurrentIdentifier(), ScopeElement(scope: 0))
     }
 
-    public func leaveScope(scope: AnyObject) {
+    public func leaveScope(scope: ScopeElement) {
         // "scopes" are an os.activity concept; this function is a no-op on Linux
     }
 }
