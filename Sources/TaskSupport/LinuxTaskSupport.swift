@@ -16,6 +16,8 @@
 import Foundation
 
 public class LinuxTaskSupport {
+    // Linux pthreads have no reference to their parent, so there's not much else we can do here
+    
     let parentActivity: activity_id_t = 0
     
     public func getIdentifiers() -> (activity_id_t, activity_id_t) {
