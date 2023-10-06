@@ -42,7 +42,7 @@ public struct OpenTelemetry {
         baggageManager = DefaultBaggageManager.instance
 
         #if os(Linux)
-        contextProvider = OpenTelemetryContextProvider(contextManager: BasicActivityContextManager.instance)
+        contextProvider = OpenTelemetryContextProvider(contextManager: DefaultActivityContextManager.instance)
         #else
         contextProvider = OpenTelemetryContextProvider(contextManager: ActivityContextManager.instance)
         #endif

@@ -7,6 +7,8 @@
 // Apple's os_activity library. There is not a one-to-one mapping between the platform libraries employed;
 // we do the best we can for Linux.
 
+#if os(Linux)
+
 import Foundation
 
 import TaskSupport
@@ -70,3 +72,5 @@ class DefaultActivityContextManager: ContextManager {
         }
     }
 }
+
+#endif

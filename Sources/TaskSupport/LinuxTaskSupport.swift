@@ -14,8 +14,6 @@
 
 import Foundation
 
-// import libpthread
-
 public class LinuxTaskSupport {
     let parentActivity: activity_id_t = 0
     

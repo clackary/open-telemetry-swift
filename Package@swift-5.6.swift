@@ -14,7 +14,6 @@ let package = Package(
       .library(name: "SignPostIntegration", type: .static, targets: ["SignPostIntegration"]),
       .library(name: "OpenTracingShim-experimental", type: .static, targets: ["OpenTracingShim"]),
       .library(name: "SwiftMetricsShim", type: .static, targets: ["SwiftMetricsShim"]),
-      .library(name: "JaegerExporter", type: .static, targets: ["JaegerExporter"]),
       .library(name: "ZipkinExporter", type: .static, targets: ["ZipkinExporter"]),
       .library(name: "StdoutExporter", type: .static, targets: ["StdoutExporter"]),
       .library(name: "PrometheusExporter", type: .static, targets: ["PrometheusExporter"]),
@@ -31,21 +30,14 @@ let package = Package(
     ],
     dependencies: [
       .package(url: "https://github.com/undefinedlabs/opentracing-objc", from: "0.5.2"),
-      .package(url: "https://github.com/undefinedlabs/Thrift-Swift", from: "1.1.1"),
       .package(url: "https://github.com/apple/swift-nio.git", from: "2.0.0"),
       .package(url: "https://github.com/grpc/grpc-swift.git", from: "1.0.0"),
       .package(url: "https://github.com/apple/swift-protobuf.git", from: "1.20.2"),
       .package(url: "https://github.com/apple/swift-log.git", from: "1.4.4"),
       .package(url: "https://github.com/apple/swift-metrics.git", from: "2.1.1"),
-      .package(url: "https://github.com/ashleymills/Reachability.swift", from: "5.1.0"),
+      .package(name: "Reachability.swift", url: "https://github.com/ashleymills/Reachability.swift", exact: "5.1.0"),
     ],
     targets: [
-      // .systemLibrary(name: "libpthread"),
-      // .target(name: "TaskSupport",
-      //         dependencies: [
-      //           .target(name: "libpthread", condition: .when(platforms: [.linux])),
-      //         ]
-      // ),
       .target(name: "TaskSupport", dependencies: []),
       .target(name: "OpenTelemetryApi", dependencies: ["TaskSupport"]),
       .target(name: "OpenTelemetrySdk",
@@ -61,7 +53,7 @@ let package = Package(
       .target(name: "NetworkStatus",
               dependencies: [
                 "OpenTelemetryApi",
-                .product(name: "Reachability", package: "Reachability.swift", condition: .when(platforms: [.iOS, .macOS, .tvOS, .macCatalyst, .linux]))
+                .product(name: "Reachability", package: "Reachability.swift", condition: .when(platforms: [.iOS, .macOS, .tvOS, .macCatalyst]))
               ],
               path: "Sources/Instrumentation/NetworkStatus",
               linkerSettings: [.linkedFramework("CoreTelephony", .when(platforms: [.iOS], configuration: nil))]),
@@ -81,12 +73,6 @@ let package = Package(
                              .product(name: "CoreMetrics", package: "swift-metrics")],
               path: "Sources/Importers/SwiftMetricsShim",
               exclude: ["README.md"]),
-      .target(name: "JaegerExporter",
-              dependencies: [
-                "OpenTelemetrySdk",
-                .product(name: "Thrift", package: "Thrift-Swift", condition: .when(platforms: [.iOS, .macOS, .tvOS, .macCatalyst, .linux]))
-              ],
-              path: "Sources/Exporters/Jaeger"),
       .target(name: "ZipkinExporter",
               dependencies: ["OpenTelemetrySdk"],
               path: "Sources/Exporters/Zipkin"),
@@ -122,12 +108,6 @@ let package = Package(
       .target(name: "PersistenceExporter",
               dependencies: ["OpenTelemetrySdk"],
               path: "Sources/Exporters/Persistence"),
-      .testTarget(name: "NetworkStatusTests",
-                  dependencies: [
-                    "NetworkStatus",
-                    .product(name: "Reachability", package: "Reachability.swift", condition: .when(platforms: [.iOS, .macOS, .tvOS, .macCatalyst, .linux]))
-                  ],
-                  path: "Tests/InstrumentationTests/NetworkStatusTests"),
       .testTarget(name: "OpenTelemetryApiTests",
                   dependencies: ["OpenTelemetryApi"],
                   path: "Tests/OpenTelemetryApiTests"),
@@ -135,14 +115,6 @@ let package = Package(
                   dependencies: ["OpenTelemetryApi",
                                  "OpenTelemetrySdk"],
                   path: "Tests/OpenTelemetrySdkTests"),
-      .testTarget(name: "ResourceExtensionTests",
-                  dependencies: ["ResourceExtension", "OpenTelemetrySdk"],
-                  path: "Tests/InstrumentationTests/SDKResourceExtensionTests"),
-      .testTarget(name: "URLSessionInstrumentationTests",
-                  dependencies: ["URLSessionInstrumentation",
-                                 .product(name: "NIO", package: "swift-nio"),
-                                 .product(name: "NIOHTTP1", package: "swift-nio")],
-                  path: "Tests/InstrumentationTests/URLSessionTests"),
       .testTarget(name: "OpenTracingShimTests",
                   dependencies: ["OpenTracingShim",
                                  "OpenTelemetrySdk"],
@@ -151,9 +123,6 @@ let package = Package(
                   dependencies: ["SwiftMetricsShim",
                                  "OpenTelemetrySdk"],
                   path: "Tests/ImportersTests/SwiftMetricsShim"),
-      .testTarget(name: "JaegerExporterTests",
-                  dependencies: ["JaegerExporter"],
-                  path: "Tests/ExportersTests/Jaeger"),
       .testTarget(name: "ZipkinExporterTests",
                   dependencies: ["ZipkinExporter"],
                   path: "Tests/ExportersTests/Zipkin"),
@@ -185,7 +154,7 @@ let package = Package(
       ),
       .executableTarget(
         name: "SimpleExporter",
-        dependencies: ["OpenTelemetrySdk", "JaegerExporter", "StdoutExporter", "ZipkinExporter", "ResourceExtension", "SignPostIntegration"],
+        dependencies: ["OpenTelemetrySdk", "StdoutExporter", "ZipkinExporter", "ResourceExtension", "SignPostIntegration"],
         path: "Examples/Simple Exporter",
         exclude: ["README.md"]
       ),

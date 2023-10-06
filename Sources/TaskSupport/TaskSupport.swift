@@ -14,7 +14,7 @@ public typealias activity_scope_state_s = os_activity_scope_state_s
 
 #else
 
-public typealias activity_id_t = UInt64
+public typealias activity_id_t = pthread_t
 public typealias activity_scope_state_s = UInt64  // this is an opaque structure on MacOS
 
 #endif
