@@ -22,6 +22,9 @@ public class ScopeElement {
 
 #else
 
+// NB: On Linux, there is no concept of "scopes"; this is a no-op right now. However, this
+// might not be sufficient.
+
 public typealias os_activity_scope_state_s = UInt64
 
 public class ScopeElement {
