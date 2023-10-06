@@ -42,3 +42,25 @@ public class OperatingSystemDataSource: IOperatingSystemDataSource {
     }
 }
 #endif
+
+#if os(Linux)
+public class OperatingSystemDataSource: IOperatingSystemDataSource {
+    public init() {}
+    
+    public var description: String {
+        "OperatingSystemDataSource: Linux: unsupported"
+    }
+
+    public var type: String {
+        "OperatingSystemDataSource: Linux: unsupported"
+    }
+    
+    public var name: String {
+        return "OperatingSystemDataSource: Linux: unsupported"
+    }
+    
+    public var version: String {
+        return "OperatingSystemDataSource: Linux: unsupported"
+    }
+}
+#endif

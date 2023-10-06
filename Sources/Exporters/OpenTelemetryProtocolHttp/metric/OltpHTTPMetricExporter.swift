@@ -3,9 +3,11 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 
+import Foundation
+import FoundationNetworking
+
 import OpenTelemetrySdk
 import OpenTelemetryProtocolExporterCommon
-import Foundation
 
 public func defaultOltpHTTPMetricsEndpoint() -> URL {
   URL(string: "http://localhost:4318/v1/metrics")!

@@ -19,12 +19,7 @@ let package = Package(
     .library(name: "OpenTelemetryProtocolExporterHTTP", type: .static, targets: ["OpenTelemetryProtocolExporterHttp"]),
     .library(name: "PersistenceExporter", type: .static, targets: ["PersistenceExporter"]),
     .library(name: "InMemoryExporter", type: .static, targets: ["InMemoryExporter"]),
-    .library(name: "DatadogExporter", type: .static, targets: ["DatadogExporter"]),
     .library(name: "NetworkStatus", type: .static, targets: ["NetworkStatus"]),
-    .executable(name: "simpleExporter", targets: ["SimpleExporter"]),
-    .executable(name: "OTLPExporter", targets: ["OTLPExporter"]),
-    .executable(name: "OTLPHTTPExporter", targets: ["OTLPHTTPExporter"]),
-    .executable(name: "loggingTracer", targets: ["LoggingTracer"])
   ],
   dependencies: [
     .package(url: "https://github.com/apple/swift-nio.git", from: "2.0.0"),
@@ -86,10 +81,6 @@ let package = Package(
     .target(name: "InMemoryExporter",
             dependencies: ["OpenTelemetrySdk"],
             path: "Sources/Exporters/InMemory"),
-    .target(name: "DatadogExporter",
-            dependencies: ["OpenTelemetrySdk"],
-            path: "Sources/Exporters/DatadogExporter",
-            exclude: ["NOTICE", "README.md"]),
     .target(name: "PersistenceExporter",
             dependencies: ["OpenTelemetrySdk"],
             path: "Sources/Exporters/Persistence"),
@@ -124,58 +115,8 @@ let package = Package(
     .testTarget(name: "InMemoryExporterTests",
                 dependencies: ["InMemoryExporter"],
                 path: "Tests/ExportersTests/InMemory"),
-    .testTarget(name: "DatadogExporterTests",
-                dependencies: ["DatadogExporter",
-                               .product(name: "NIO", package: "swift-nio"),
-                               .product(name: "NIOHTTP1", package: "swift-nio")],
-                path: "Tests/ExportersTests/DatadogExporter"),
     .testTarget(name: "PersistenceExporterTests",
                 dependencies: ["PersistenceExporter"],
                 path: "Tests/ExportersTests/PersistenceExporter"),
-    .executableTarget(
-      name: "LoggingTracer",
-      dependencies: ["OpenTelemetryApi"],
-      path: "Examples/Logging Tracer"
-    ),
-    .executableTarget(
-      name: "SimpleExporter",
-      dependencies: ["OpenTelemetrySdk", "StdoutExporter", "ZipkinExporter", "ResourceExtension", "SignPostIntegration"],
-      path: "Examples/Simple Exporter",
-      exclude: ["README.md"]
-    ),
-    .executableTarget(
-      name: "OTLPExporter",
-      dependencies: ["OpenTelemetrySdk", "OpenTelemetryProtocolExporterGrpc", "StdoutExporter", "ZipkinExporter", "ResourceExtension", "SignPostIntegration"],
-      path: "Examples/OTLP Exporter",
-      exclude: ["README.md"]
-    ),
-    .executableTarget(
-      name: "OTLPHTTPExporter",
-      dependencies: ["OpenTelemetrySdk", "OpenTelemetryProtocolExporterHttp", "StdoutExporter", "ZipkinExporter", "ResourceExtension", "SignPostIntegration"],
-      path: "Examples/OTLP HTTP Exporter",
-      exclude: ["README.md"]
-    ),
-    .executableTarget(
-      name: "PrometheusSample",
-      dependencies: ["OpenTelemetrySdk", "PrometheusExporter"],
-      path: "Examples/Prometheus Sample",
-      exclude: ["README.md"]
-    ),
-    .executableTarget(
-      name: "DatadogSample",
-      dependencies: ["DatadogExporter"],
-      path: "Examples/Datadog Sample",
-      exclude: ["README.md"]
-    ),
-    .executableTarget(
-      name: "LogsSample",
-      dependencies: ["OpenTelemetrySdk", "OpenTelemetryProtocolExporterGrpc", .product(name: "GRPC", package: "grpc-swift")],
-      path: "Examples/Logs Sample"),
-    .executableTarget(
-      name: "NetworkSample",
-      dependencies: ["URLSessionInstrumentation", "StdoutExporter"],
-      path: "Examples/Network Sample",
-      exclude: ["README.md"]
-    )
   ]
 )

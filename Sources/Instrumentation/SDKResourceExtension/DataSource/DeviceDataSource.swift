@@ -68,3 +68,17 @@ public class DeviceDataSource: IDeviceDataSource {
     }
 }
 #endif
+
+#if os(Linux)
+public class DeviceDataSource: IDeviceDataSource {
+    public init() {}
+
+    public var model: String? {
+        return "DeviceDataSource: Unsupported on Linux"
+    }
+
+    public var identifier: String? {
+        return "DeviceDataSource: Unsupported on Linux"
+    }
+}
+#endif
