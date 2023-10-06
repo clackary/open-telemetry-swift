@@ -4,6 +4,9 @@
  */
 
 import Foundation
+
+#if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
+
 #if os(watchOS)
     import WatchKit
 #elseif os(macOS)
@@ -11,6 +14,7 @@ import Foundation
 #else
     import UIKit
 #endif
+
 public class DeviceDataSource: IDeviceDataSource {
     public init() {}
 
@@ -63,3 +67,4 @@ public class DeviceDataSource: IDeviceDataSource {
         #endif
     }
 }
+#endif

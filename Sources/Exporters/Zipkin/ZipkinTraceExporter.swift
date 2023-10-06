@@ -4,6 +4,8 @@
  */
 
 import Foundation
+import FoundationNetworking
+
 import OpenTelemetrySdk
 
 public class ZipkinTraceExporter: SpanExporter {

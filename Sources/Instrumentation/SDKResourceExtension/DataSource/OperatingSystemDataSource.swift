@@ -2,6 +2,9 @@
  * Copyright The OpenTelemetry Authors
  * SPDX-License-Identifier: Apache-2.0
  */
+
+#if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
+
 #if os(watchOS)
     import WatchKit
 #elseif os(macOS)
@@ -10,6 +13,7 @@
 #endif
 
 import Foundation
+
 import OpenTelemetrySdk
 
 public class OperatingSystemDataSource: IOperatingSystemDataSource {
@@ -37,3 +41,4 @@ public class OperatingSystemDataSource: IOperatingSystemDataSource {
         return "\(version.majorVersion).\(version.minorVersion).\(version.patchVersion)"
     }
 }
+#endif
