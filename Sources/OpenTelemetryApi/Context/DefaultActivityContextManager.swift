@@ -3,9 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-// This class implements the Linux behavior required to employ activity, or thread, contexts as offered by
-// Apple's os_activity library. There is not a one-to-one mapping between the platform libraries employed;
-// we do the best we can for Linux.
+// This class implements the Linux behavior required to employ activity contexts as offered by Apple's
+// os_activity library. There is not a one-to-one mapping between the platform libraries employed;
+// we do the best we can for Linux, using getcontext(3).
 
 #if os(Linux)
 
@@ -13,6 +13,8 @@ import Foundation
 import ucontext
 
 import TaskSupport
+
+// All this syntactic sugar just so we can use a C ucontext_t struct as a dictionay key.
 
 struct UContext: Hashable, Equatable {
     var context: UnsafeMutableRawPointer
