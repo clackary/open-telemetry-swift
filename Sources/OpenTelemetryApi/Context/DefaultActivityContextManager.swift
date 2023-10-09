@@ -64,7 +64,7 @@ class DefaultActivityContextManager: ContextManager {
             rlock.unlock()
         }
 
-        if contextMap[contextKey] == nil {
+        if contextMap[contextKey] == nil || contextMap[contextKey]?[key.rawValue] != nil {
             let (activityIdent, _) = TaskSupport.instance.createActivityContext()
 
             contextMap[UContext(context: activityIdent)] = [String: AnyObject]()
