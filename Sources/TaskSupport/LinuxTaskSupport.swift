@@ -39,14 +39,14 @@ public class LinuxTaskSupport {
 
     func getContext() -> activity_id_t {
         let dso = UnsafeMutableRawPointer(mutating: #dsohandle)
-        var ucp: activity_id_t = ucontext_t()
+        var ucp: ucontext_t = ucontext_t()
 
         guard _getcontext(dso, &ucp) == 0 else {
             print("LinuxTaskSupport.createActivityContext(): failed to get user context!")
-            return ucp
+            return ucontext(context: ucp)
         }
 
-        return ucp
+        return ucontext(context: ucp)
     }
 }
 

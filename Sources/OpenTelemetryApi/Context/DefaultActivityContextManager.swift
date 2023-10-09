@@ -15,7 +15,7 @@ import ucontext
 import TaskSupport
 
 struct UContext: Hashable, Equatable {
-    var context: activity_id_t
+    var context: UnsafeMutableRawPointer
     
     static func == (a: UContext, b: UContext) -> Bool {
         return a.context == b.context
@@ -25,8 +25,8 @@ struct UContext: Hashable, Equatable {
         hasher.combine(self)
     }
 
-    init(context: activity_id_t) {
-        self.context = context
+    init(context: ucontext) {
+        self.context = Unmanaged.passUnretained(context).toOpaque()
     }
 }
 

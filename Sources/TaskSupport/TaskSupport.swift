@@ -21,7 +21,15 @@ import ucontext
 // ucontext API to serve as an analog, but as of this writing it's uncertain whether or not
 // this will be sufficient.
 
-public typealias activity_id_t = ucontext_t
+public class ucontext {
+    var context: ucontext_t
+
+    public init(context: ucontext_t) {
+        self.context = context
+    }
+}
+
+public typealias activity_id_t = ucontext
 public typealias parent_activity_id_t = UInt64
 public typealias activity_scope_state_s = UInt64  // this is an opaque structure on MacOS
 
