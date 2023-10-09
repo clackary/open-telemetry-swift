@@ -15,25 +15,37 @@
 
 import Foundation
 
+public typealias activity_id_t = ucontext_t
+
 public class LinuxTaskSupport {
-    // Linux pthreads have no reference to their parent, so there's not much else we can do here
-    
-    let parentActivity: activity_id_t = 0
+    let parentActivity: activity_id_t = nil  // Linux offers no connectivity to parent contexts
     
     public func getIdentifiers() -> (activity_id_t, activity_id_t) {
-        return (pthread_self(), parentActivity)
+        return (getContext(), parentActivity)
     }
 
     public func getCurrentIdentifier() -> activity_id_t {
-        return pthread_self()
+        return getContext()
     }
 
     public func createActivityContext() -> (activity_id_t, ScopeElement) {
-        return (getCurrentIdentifier(), ScopeElement(scope: 0))
+        return (getContext(), ScopeElement(scope: 0))
     }
 
     public func leaveScope(scope: ScopeElement) {
         // "scopes" are an os.activity concept; this function is a no-op on Linux
+    }
+
+    func getContext() -> activity_id_t {
+        var ucp = nil
+
+        guard let rval = getcontext(&ucp) == 0 else {
+            print("LinuxTaskSupport.createActivityContext(): failed to get user context!")
+            
+            return nil
+        }
+
+        return ucp
     }
 }
 
