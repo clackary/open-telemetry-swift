@@ -14,16 +14,15 @@
 #if os(Linux)
 
 import Foundation
-
 import ucontext
 
 @_silgen_name("_getcontext") private func _getcontext(_ dso: UnsafeRawPointer?, _ buf: UnsafeRawPointer?) -> Int
 
 public class LinuxTaskSupport {
-    let parentActivity: activity_id_t? = nil  // Linux offers no connectivity to parent contexts
+    let parentActivity: parent_activity_id_t = 0  // Linux offers no connectivity to parent contexts
     
-    public func getIdentifiers() -> (activity_id_t, activity_id_t) {
-        return (getContext(), ucontext_t())
+    public func getIdentifiers() -> (activity_id_t, parent_activity_id_t) {
+        return (getContext(), parentActivity)
     }
 
     public func getCurrentIdentifier() -> activity_id_t {

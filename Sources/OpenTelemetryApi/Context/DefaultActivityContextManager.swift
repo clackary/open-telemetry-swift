@@ -10,15 +10,33 @@
 #if os(Linux)
 
 import Foundation
+import ucontext
 
 import TaskSupport
+
+class UContext: Hashable, Equatable {
+    var context: UnsafePointer<ucontext_t>?
+    
+    static func == (a: UContext, b: UContext) -> Bool {
+        return a.context == b.context
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(self)
+    }
+
+    init(context: ucontext_t) {
+        self.context = UnsafePointer<ucontext_t>(context)
+    }
+}
 
 class DefaultActivityContextManager: ContextManager {
     static let instance = DefaultActivityContextManager()
 
     let rlock = NSRecursiveLock()
 
-    var contextMap = [activity_id_t: [String: AnyObject]]()
+    // var contextMap = [UContext: [String: AnyObject]]()
+    var contextMap = [ucontext_t, [String: AnyObject]]()
 
     func getCurrentContextValue(forKey key: OpenTelemetryContextKeys) -> AnyObject? {
         let (activityIdent, parentIdent) = TaskSupport.instance.getIdentifiers()
