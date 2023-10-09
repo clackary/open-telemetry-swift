@@ -14,12 +14,14 @@ public typealias activity_scope_state_s = os_activity_scope_state_s
 
 #else
 
+import ucontext
+
 // On Linux there is no equivalent of the os.activity library. We've chosen to use pthread
 // identifiers to serve as activity IDs, but in Swift concurrency threads do NOT necessarily
 // map one-to-one to tasks spawned by async/await constructs; this is an area that is not
 // completely understood. There might be issues here.
 
-public typealias activity_id_t = pthread_t
+public typealias activity_id_t = ucontext_t
 public typealias activity_scope_state_s = UInt64  // this is an opaque structure on MacOS
 
 #endif
