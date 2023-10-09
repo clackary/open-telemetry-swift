@@ -1,6 +1,0 @@
-
-module libpthread [system] {
-    header "pthread.h"
-    link "pthread"
-    export *
-}
