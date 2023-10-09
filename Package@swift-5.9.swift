@@ -30,7 +30,7 @@ let package = Package(
     .package(url: "https://github.com/ashleymills/Reachability.swift", from: "5.1.0"),
   ],
   targets: [
-    .systemLibrary(name: "ucontext", condition: .when(platforms: [.linux])),
+    .systemLibrary(name: "ucontext"),
     .target(name: "TaskSupport", dependencies: ["ucontext"]),
     .target(name: "OpenTelemetryApi", dependencies: ["TaskSupport"]),
     .target(name: "OpenTelemetrySdk",

@@ -15,13 +15,15 @@
 
 import Foundation
 
-public typealias activity_id_t = ucontext_t
+import ucontext
+
+@_silgen_name("_getcontext") private func _getcontext(_ dso: UnsafeRawPointer?, _ buf: UnsafeRawPointer?) -> Int
 
 public class LinuxTaskSupport {
-    let parentActivity: activity_id_t = nil  // Linux offers no connectivity to parent contexts
+    let parentActivity: activity_id_t? = nil  // Linux offers no connectivity to parent contexts
     
     public func getIdentifiers() -> (activity_id_t, activity_id_t) {
-        return (getContext(), parentActivity)
+        return (getContext(), ucontext_t())
     }
 
     public func getCurrentIdentifier() -> activity_id_t {
@@ -37,12 +39,12 @@ public class LinuxTaskSupport {
     }
 
     func getContext() -> activity_id_t {
-        var ucp = nil
+        let dso = UnsafeMutableRawPointer(mutating: #dsohandle)
+        var ucp: activity_id_t = ucontext_t()
 
-        guard let rval = getcontext(&ucp) == 0 else {
+        guard _getcontext(dso, &ucp) == 0 else {
             print("LinuxTaskSupport.createActivityContext(): failed to get user context!")
-            
-            return nil
+            return ucp
         }
 
         return ucp
