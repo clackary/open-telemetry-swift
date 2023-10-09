@@ -10,7 +10,6 @@
 #if os(Linux)
 
 import Foundation
-import ucontext
 
 import TaskSupport
 
