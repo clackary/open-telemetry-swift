@@ -14,8 +14,8 @@ import ucontext
 
 import TaskSupport
 
-class UContext: Hashable, Equatable {
-    var context: UnsafePointer<ucontext_t>?
+struct UContext: Hashable, Equatable {
+    var context: activity_id_t
     
     static func == (a: UContext, b: UContext) -> Bool {
         return a.context == b.context
@@ -25,8 +25,8 @@ class UContext: Hashable, Equatable {
         hasher.combine(self)
     }
 
-    init(context: ucontext_t) {
-        self.context = UnsafePointer<ucontext_t>(context)
+    init(context: activity_id_t) {
+        self.context = context
     }
 }
 
@@ -35,11 +35,10 @@ class DefaultActivityContextManager: ContextManager {
 
     let rlock = NSRecursiveLock()
 
-    // var contextMap = [UContext: [String: AnyObject]]()
-    var contextMap = [ucontext_t, [String: AnyObject]]()
+    var contextMap = [UContext: [String: AnyObject]]()
 
     func getCurrentContextValue(forKey key: OpenTelemetryContextKeys) -> AnyObject? {
-        let (activityIdent, parentIdent) = TaskSupport.instance.getIdentifiers()
+        let (activityIdent, _) = TaskSupport.instance.getIdentifiers()
 
         rlock.lock()
 
@@ -47,7 +46,7 @@ class DefaultActivityContextManager: ContextManager {
             rlock.unlock()
         }
 
-        guard let context = contextMap[activityIdent] ?? contextMap[parentIdent] else {
+        guard let context = contextMap[UContext(context: activityIdent)] else {
             return nil
         }
 
@@ -56,6 +55,7 @@ class DefaultActivityContextManager: ContextManager {
 
     func setCurrentContextValue(forKey key: OpenTelemetryContextKeys, value: AnyObject) {
         let (activityIdent, _) = TaskSupport.instance.getIdentifiers()
+        let contextKey = UContext(context: activityIdent)
         
         rlock.lock()
 
@@ -63,17 +63,18 @@ class DefaultActivityContextManager: ContextManager {
             rlock.unlock()
         }
 
-        if contextMap[activityIdent] == nil || contextMap[activityIdent]?[key.rawValue] != nil {
+        if contextMap[contextKey] == nil {
             let (activityIdent, _) = TaskSupport.instance.createActivityContext()
 
-            contextMap[activityIdent] = [String: AnyObject]()
+            contextMap[UContext(context: activityIdent)] = [String: AnyObject]()
         }
 
-        contextMap[activityIdent]?[key.rawValue] = value
+        contextMap[contextKey]?[key.rawValue] = value
     }
 
     func removeContextValue(forKey key: OpenTelemetryContextKeys, value: AnyObject) {
         let activityIdent = TaskSupport.instance.getCurrentIdentifier()
+        let contextKey = UContext(context: activityIdent)
         
         rlock.lock()
 
@@ -81,11 +82,11 @@ class DefaultActivityContextManager: ContextManager {
             rlock.unlock()
         }
         
-        if let currentValue = contextMap[activityIdent]?[key.rawValue], currentValue === value {
-            contextMap[activityIdent]?[key.rawValue] = nil
+        if let currentValue = contextMap[contextKey]?[key.rawValue], currentValue === value {
+            contextMap[contextKey]?[key.rawValue] = nil
 
-            if contextMap[activityIdent]?.isEmpty ?? false {
-                contextMap[activityIdent] = nil
+            if contextMap[contextKey]?.isEmpty ?? false {
+                contextMap[contextKey] = nil
             }
         }
     }
