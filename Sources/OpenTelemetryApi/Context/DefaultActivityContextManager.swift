@@ -47,7 +47,12 @@ class DefaultActivityContextManager: ContextManager {
             rlock.unlock()
         }
 
+        print("DefaultActivityContextManager.getCurrentContextValue():")
+        print("  key: \(key)")
+        print("  activityIdent: \(activityIdent)")
+
         guard let context = contextMap[UContext(context: activityIdent)] else {
+            print("  contextMap: no item bound to key: \(activityIdent): returning nil")
             return nil
         }
 
@@ -64,11 +69,20 @@ class DefaultActivityContextManager: ContextManager {
             rlock.unlock()
         }
 
+        print("DefaultActivityContextManager.setCurrentContextValue():")
+        print("  key: \(key)")
+        print("  value: \(value)")
+        print("  activityIdent: \(activityIdent)")
+
         if contextMap[contextKey] == nil || contextMap[contextKey]?[key.rawValue] != nil {
             let (activityIdent, _) = TaskSupport.instance.createActivityContext()
 
+            print("  contextMap: no item at context key: \(contextKey): initializing:")
+            
             contextMap[UContext(context: activityIdent)] = [String: AnyObject]()
         }
+
+        print("  contextMap: binding value: \(value) to key: \(contextKey)")
 
         contextMap[contextKey]?[key.rawValue] = value
     }
@@ -83,10 +97,18 @@ class DefaultActivityContextManager: ContextManager {
             rlock.unlock()
         }
         
+        print("DefaultActivityContextManager.removeCurrentContextValue():")
+        print("  key: \(key)")
+        print("  value: \(value)")
+        print("  activityIdent: \(activityIdent)")
+        print("  contextKey: \(contextKey)")
+
         if let currentValue = contextMap[contextKey]?[key.rawValue], currentValue === value {
             contextMap[contextKey]?[key.rawValue] = nil
 
             if contextMap[contextKey]?.isEmpty ?? false {
+                print("  contextMap: removing item bound to key: \(contextKey)")
+
                 contextMap[contextKey] = nil
             }
         }
