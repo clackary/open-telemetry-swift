@@ -4,7 +4,10 @@
  */
 
 import Foundation
+
+#if os(Linux)
 import FoundationNetworking
+#endif
 
 import OpenTelemetryApi
 import OpenTelemetrySdk

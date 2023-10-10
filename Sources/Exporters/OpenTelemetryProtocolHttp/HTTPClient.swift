@@ -4,7 +4,10 @@
  */
 
 import Foundation
+
+#if os(Linux)
 import FoundationNetworking
+#endif
 
 /// Client for sending requests over HTTP.
 internal final class HTTPClient {
