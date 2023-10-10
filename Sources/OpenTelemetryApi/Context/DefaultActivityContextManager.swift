@@ -16,10 +16,18 @@ import TaskSupport
 // All this syntactic sugar just so we can use a C ucontext_t struct as a dictionay key.
 
 struct UContext: Hashable, Equatable {
-    var context: UnsafeMutableRawPointer
+    var context: ucontext
     
     static func == (a: UContext, b: UContext) -> Bool {
-        return a.context == b.context
+        let size = MemoryLayout<ucontext>.size
+        
+        let rval = withUnsafePointer(to: a.context) { aa in
+            withUnsafePointer(to: b.context) { bb in
+                return memcmp(aa, bb, size) == 0
+            }
+        }
+
+        return rval
     }
 
     func hash(into hasher: inout Hasher) {
@@ -27,7 +35,7 @@ struct UContext: Hashable, Equatable {
     }
 
     init(context: ucontext) {
-        self.context = Unmanaged.passUnretained(context).toOpaque()
+        self.context = context
     }
 }
 
