@@ -1,6 +1,6 @@
 
-module libpl [system] {
-    header "./libpl/include/ucontext.h"
-    link "pl"
+module libpl {
+    header "./include/libpl.h"
+    link "libpl"
     export *
 }

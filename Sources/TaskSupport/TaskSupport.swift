@@ -15,7 +15,7 @@ public typealias activity_scope_state_s = os_activity_scope_state_s
 
 #else
 
-import ucontext
+import libpl
 
 // On Linux there is no equivalent of the os.activity library. We've chosen to use the POSIX
 // ucontext API to serve as an analog, but as of this writing it's uncertain whether or not
