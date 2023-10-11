@@ -6,10 +6,7 @@
 // This class pretends to be the Linux equivalent of Apple's os.activity library, but in no way succeeds
 // as there are currently no Linux analogs to Apple's library. The best advice we've received thus far was from a very
 // experienced MacOS developer. He suggested we NOT attempt to re-create that library for Linux. For now,
-// we'll see if libpthread is sufficient. Trouble is, Swift concurrency - async/await (Tasks) - can apparently span
-// OS-level threads on occasion, which means pthread_self() will not always be reliable. Note, however, that other
-// areas of opentelemetry-swift employ the pthread interface, so dunno. Testing will reveal whether or not this
-// will work for our needs.
+// we'll see if the libc context API is sufficient; it might very well not work.
 
 #if os(Linux)
 
@@ -41,7 +38,7 @@ public class LinuxTaskSupport {
         let dso = UnsafeMutableRawPointer(mutating: #dsohandle)
         var ucp: ucontext_t = ucontext_t()
 
-        guard _getcontext(dso, &ucp) == 0 else {
+        guard getcontext(dso, &ucp) == 0 else {
             print("LinuxTaskSupport.createActivityContext(): failed to get user context!")
             return ucontext(context: ucp)
         }

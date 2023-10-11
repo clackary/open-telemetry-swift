@@ -46,7 +46,7 @@ public class ucontext: Hashable, Equatable {
 }
 
 public typealias activity_id_t = ucontext
-public typealias parent_activity_id_t = UInt64
+public typealias parent_activity_id_t = UInt64  // there's no way to obtain a context parent on Linux
 public typealias activity_scope_state_s = UInt64  // this is an opaque structure on MacOS
 
 #endif
