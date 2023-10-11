@@ -13,7 +13,7 @@
 import Foundation
 import ucontext
 
-@_silgen_name("_getcontext") private func _getcontext(_ dso: UnsafeRawPointer?, _ buf: UnsafeRawPointer?) -> Int
+@_silgen_name("getcontext") private func getcontext(_ dso: UnsafeRawPointer?, _ buf: UnsafeRawPointer?) -> Int
 
 public class LinuxTaskSupport {
     let parentActivity: parent_activity_id_t = 0  // Linux offers no connectivity to parent contexts
