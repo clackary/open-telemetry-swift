@@ -21,8 +21,24 @@ import ucontext
 // ucontext API to serve as an analog, but as of this writing it's uncertain whether or not
 // this will be sufficient.
 
-public class ucontext {
+public class ucontext: Hashable, Equatable {
     var context: ucontext_t
+
+    static public func == (a: ucontext, b: ucontext) -> Bool {
+        let size = MemoryLayout<ucontext_t>.size
+        
+        let rval = withUnsafePointer(to: a.context) { aa in
+            withUnsafePointer(to: b.context) { bb in
+                return memcmp(aa, bb, size) == 0
+            }
+        }
+
+        return rval
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(self)
+    }
 
     public init(context: ucontext_t) {
         self.context = context

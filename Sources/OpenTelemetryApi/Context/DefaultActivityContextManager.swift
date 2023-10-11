@@ -13,41 +13,15 @@ import Foundation
 
 import TaskSupport
 
-// All this syntactic sugar just so we can use a C ucontext_t struct as a dictionay key.
-
-struct UContext: Hashable, Equatable {
-    var context: ucontext
-    
-    static func == (a: UContext, b: UContext) -> Bool {
-        let size = MemoryLayout<ucontext>.size
-        
-        let rval = withUnsafePointer(to: a.context) { aa in
-            withUnsafePointer(to: b.context) { bb in
-                return memcmp(aa, bb, size) == 0
-            }
-        }
-
-        return rval
-    }
-
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(self)
-    }
-
-    init(context: ucontext) {
-        self.context = context
-    }
-}
-
 class DefaultActivityContextManager: ContextManager {
     static let instance = DefaultActivityContextManager()
 
     let rlock = NSRecursiveLock()
 
-    var contextMap = [UContext: [String: AnyObject]]()
+    var contextMap = [ucontext: [String: AnyObject]]()
 
     func getCurrentContextValue(forKey key: OpenTelemetryContextKeys) -> AnyObject? {
-        let (activityIdent, _) = TaskSupport.instance.getIdentifiers()
+        let (activityContext, _) = TaskSupport.instance.getIdentifiers()
 
         rlock.lock()
 
@@ -57,10 +31,10 @@ class DefaultActivityContextManager: ContextManager {
 
         print("DefaultActivityContextManager.getCurrentContextValue():")
         print("  key: \(key)")
-        print("  activityIdent: \(activityIdent)")
+        print("  activityContext: \(activityContext)")
 
-        guard let context = contextMap[UContext(context: activityIdent)] else {
-            print("  contextMap: no item bound to key: \(activityIdent): returning nil")
+        guard let context = contextMap[activityContext] else {
+            print("  contextMap: no item bound to key: \(activityContext): returning nil")
             return nil
         }
 
@@ -68,8 +42,7 @@ class DefaultActivityContextManager: ContextManager {
     }
 
     func setCurrentContextValue(forKey key: OpenTelemetryContextKeys, value: AnyObject) {
-        let (activityIdent, _) = TaskSupport.instance.getIdentifiers()
-        let contextKey = UContext(context: activityIdent)
+        let (activityContext, _) = TaskSupport.instance.getIdentifiers()
         
         rlock.lock()
 
@@ -80,24 +53,23 @@ class DefaultActivityContextManager: ContextManager {
         print("DefaultActivityContextManager.setCurrentContextValue():")
         print("  key: \(key)")
         print("  value: \(value)")
-        print("  activityIdent: \(activityIdent)")
+        print("  activityContext: \(activityContext)")
 
-        if contextMap[contextKey] == nil || contextMap[contextKey]?[key.rawValue] != nil {
-            let (activityIdent, _) = TaskSupport.instance.createActivityContext()
+        if contextMap[activityContext] == nil || contextMap[activityContext]?[key.rawValue] != nil {
+            let (activityContext, _) = TaskSupport.instance.createActivityContext()
 
-            print("  contextMap: no item at context key: \(contextKey): initializing:")
+            print("  contextMap: no item at context key: \(activityContext): initializing:")
             
-            contextMap[UContext(context: activityIdent)] = [String: AnyObject]()
+            contextMap[activityContext] = [String: AnyObject]()
         }
 
-        print("  contextMap: binding value: \(value) to key: \(contextKey)")
+        print("  contextMap: binding value: \(value) to context key: \(activityContext)")
 
-        contextMap[contextKey]?[key.rawValue] = value
+        contextMap[activityContext]?[key.rawValue] = value
     }
 
     func removeContextValue(forKey key: OpenTelemetryContextKeys, value: AnyObject) {
-        let activityIdent = TaskSupport.instance.getCurrentIdentifier()
-        let contextKey = UContext(context: activityIdent)
+        let activityContext = TaskSupport.instance.getCurrentIdentifier()
         
         rlock.lock()
 
@@ -108,16 +80,15 @@ class DefaultActivityContextManager: ContextManager {
         print("DefaultActivityContextManager.removeCurrentContextValue():")
         print("  key: \(key)")
         print("  value: \(value)")
-        print("  activityIdent: \(activityIdent)")
-        print("  contextKey: \(contextKey)")
+        print("  activityContext: \(activityContext)")
 
-        if let currentValue = contextMap[contextKey]?[key.rawValue], currentValue === value {
-            contextMap[contextKey]?[key.rawValue] = nil
+        if let currentValue = contextMap[activityContext]?[key.rawValue], currentValue === value {
+            contextMap[activityContext]?[key.rawValue] = nil
 
-            if contextMap[contextKey]?.isEmpty ?? false {
-                print("  contextMap: removing item bound to key: \(contextKey)")
+            if contextMap[activityContext]?.isEmpty ?? false {
+                print("  contextMap: removing item bound to context key: \(activityContext)")
 
-                contextMap[contextKey] = nil
+                contextMap[activityContext] = nil
             }
         }
     }
