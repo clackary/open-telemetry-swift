@@ -1,6 +1,6 @@
 
-module libpl {
+module libpl [system] {
     header "./include/libpl.h"
-    link "libpl"
+    link "pl"
     export *
 }
