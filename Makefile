@@ -2,6 +2,12 @@
 # This Makefile may be used to build our fork of opentelemetry-swift for Linux. You may also use it
 # on MacOS if you prefer the approach over Xcode (I do).
 
+# The Linux port of opentelemetry-swift contains a bit of C, using to construct a small shared library
+# that wraps the libc getcontext() function. This is required because Swift believes that in every use
+# case, getcontext() will return twice (eg. setjmp()/longjmp()), when in fact it returns just once (as
+# would any normal function) the way we use it. So Swift prohibits the compilation of any code referencing
+# the getcontext symbol.
+
 PROJECT_NAME="opentelemetry-swift-Package"
 
 uname := $(shell uname)
