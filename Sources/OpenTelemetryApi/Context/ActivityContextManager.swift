@@ -3,86 +3,107 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import Foundation
-import os.activity
+#if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
 
-// Bridging Obj-C variabled defined as c-macroses. See `activity.h` header.
-private let OS_ACTIVITY_CURRENT = unsafeBitCast(dlsym(UnsafeMutableRawPointer(bitPattern: -2), "_os_activity_current"),
-                                                to: os_activity_t.self)
-@_silgen_name("_os_activity_create") private func _os_activity_create(_ dso: UnsafeRawPointer?,
-                                                                      _ description: UnsafePointer<Int8>,
-                                                                      _ parent: Unmanaged<AnyObject>?,
-                                                                      _ flags: os_activity_flag_t) -> AnyObject!
+import Foundation
+
+import TaskSupport
 
 class ActivityContextManager: ContextManager {
     static let instance = ActivityContextManager()
 
     let rlock = NSRecursiveLock()
 
-    class ScopeElement {
-        init(scope: os_activity_scope_state_s) {
-            self.scope = scope
-        }
-
-        var scope: os_activity_scope_state_s
-    }
-
     var objectScope = NSMapTable<AnyObject, ScopeElement>(keyOptions: .weakMemory, valueOptions: .strongMemory)
-    var contextMap = [os_activity_id_t: [String: AnyObject]]()
+    var contextMap = [activity_id_t: [String: AnyObject]]()
 
     func getCurrentContextValue(forKey key: OpenTelemetryContextKeys) -> AnyObject? {
-        var parentIdent: os_activity_id_t = 0
-        let activityIdent = os_activity_get_identifier(OS_ACTIVITY_CURRENT, &parentIdent)
+        let (activityIdent, parentIdent) = TaskSupport.instance.getIdentifiers()
         var contextValue: AnyObject?
+
+        print("ActivityContextManager.getCurrentContextValue():")
+        print("  key: \(key)")
+        print("  activityIdent: \(activityIdent)")
+        print("  parentIdent: \(parentIdent)")
+
         rlock.lock()
-        guard let context = contextMap[activityIdent] ?? contextMap[parentIdent] else {
+
+        defer {
             rlock.unlock()
+        }
+        
+        guard let context = contextMap[activityIdent] ?? contextMap[parentIdent] else {
+            print("  contextMap: no item for activityIdent: returning nil")
+            
             return nil
         }
+
+        print("  context: \(context)")
+
         contextValue = context[key.rawValue]
-        rlock.unlock()
+
         return contextValue
     }
 
     func setCurrentContextValue(forKey key: OpenTelemetryContextKeys, value: AnyObject) {
-        var parentIdent: os_activity_id_t = 0
-        var activityIdent = os_activity_get_identifier(OS_ACTIVITY_CURRENT, &parentIdent)
-        rlock.lock()
-        if contextMap[activityIdent] == nil || contextMap[activityIdent]?[key.rawValue] != nil {
-            var scope: os_activity_scope_state_s
-            (activityIdent, scope) = createActivityContext()
-            contextMap[activityIdent] = [String: AnyObject]()
-            objectScope.setObject(ScopeElement(scope: scope), forKey: value)
-        }
-        contextMap[activityIdent]?[key.rawValue] = value
-        rlock.unlock()
-    }
+        let (activityIdent, _) = TaskSupport.instance.getIdentifiers()
 
-    func createActivityContext() -> (os_activity_id_t, os_activity_scope_state_s) {
-        let dso = UnsafeMutableRawPointer(mutating: #dsohandle)
-        let activity = _os_activity_create(dso, "ActivityContext", OS_ACTIVITY_CURRENT, OS_ACTIVITY_FLAG_DEFAULT)
-        let currentActivityId = os_activity_get_identifier(activity, nil)
-        var activityState = os_activity_scope_state_s()
-        os_activity_scope_enter(activity, &activityState)
-        return (currentActivityId, activityState)
+        print("ActivityContextManager.setCurrentContextValue():")
+        print("  key: \(key)")
+        print("  value: \(value)")
+        print("  activityIdent: \(activityIdent)")
+        
+        rlock.lock()
+
+        defer {
+            rlock.unlock()
+        }
+        
+        if contextMap[activityIdent] == nil || contextMap[activityIdent]?[key.rawValue] != nil {
+            let (activityIdent, scope) = TaskSupport.instance.createActivityContext()
+
+            print("ActivityContextManager.setCurrentContextValue(): context map: no item at index: \(activityIdent): initializing:")
+            print("  scope: \(scope)")
+
+            contextMap[activityIdent] = [String: AnyObject]()
+            objectScope.setObject(scope, forKey: value)
+        }
+
+        contextMap[activityIdent]?[key.rawValue] = value
     }
 
     func removeContextValue(forKey key: OpenTelemetryContextKeys, value: AnyObject) {
-        let activityIdent = os_activity_get_identifier(OS_ACTIVITY_CURRENT, nil)
+        let activityIdent = TaskSupport.instance.getCurrentIdentifier()
+        
         rlock.lock()
-        if let currentValue = contextMap[activityIdent]?[key.rawValue],
-           currentValue === value
-        {
-         contextMap[activityIdent]?[key.rawValue] = nil
-          if contextMap[activityIdent]?.isEmpty ?? false {
-            contextMap[activityIdent] = nil
-          }
+
+        print("ActivityContextManager.removeContextValue():")
+        print("  key: \(key)")
+        print("  value: \(value)")
+        print("  activityIdent: \(activityIdent)")
+
+        defer {
+            rlock.unlock()
         }
+        
+        if let currentValue = contextMap[activityIdent]?[key.rawValue],
+           currentValue === value {
+            print("  contextMap[activityIdent]: \(currentValue)")
+            
+            contextMap[activityIdent]?[key.rawValue] = nil
+
+            if contextMap[activityIdent]?.isEmpty ?? false {
+                contextMap[activityIdent] = nil
+            }
+        }
+
         if let scope = objectScope.object(forKey: value) {
-            var scope = scope.scope
-            os_activity_scope_leave(&scope)
+            print("  leaving scope: \(scope)")
+            
+            TaskSupport.instance.leaveScope(scope: scope)
             objectScope.removeObject(forKey: value)
         }
-        rlock.unlock()
     }
 }
+
+#endif

@@ -4,6 +4,11 @@
  */
 
 import Foundation
+
+#if os(Linux)
+import FoundationNetworking
+#endif
+
 import OpenTelemetryApi
 import OpenTelemetrySdk
 
@@ -22,6 +27,32 @@ struct NetworkRequestState {
 
 private var idKey: Void?
 
+#if os(Linux)
+public class URLSessionInstrumentation {
+    var configuration: URLSessionInstrumentationConfiguration
+
+    public private(set) var tracer: Tracer
+
+    public var startedRequestSpans: [Span] {
+        var spans = [Span]()
+        
+        URLSessionLogger.runningSpansQueue.sync {
+            spans = Array(URLSessionLogger.runningSpans.values)
+        }
+        
+        return spans
+    }
+
+    public init(configuration: URLSessionInstrumentationConfiguration) {
+        self.configuration = configuration
+        
+        tracer = OpenTelemetry.instance.tracerProvider.get(instrumentationName: "NSURLSession", instrumentationVersion: "0.0.1")
+
+        print("URLSessionInstrumentation: Linux is not supported!")
+    }
+}
+
+#else
 public class URLSessionInstrumentation {
     private var requestMap = [String: NetworkRequestState]()
 
@@ -637,6 +668,7 @@ public class URLSessionInstrumentation {
         }
     }
 }
+#endif
 
 class FakeDelegate: NSObject, URLSessionTaskDelegate {
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {}

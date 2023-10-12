@@ -5,22 +5,20 @@
 
 import Foundation
 import OpenTelemetryApi
-public class StablePeriodicMetricReaderSdk : StableMetricReader {
 
-    
+public class StablePeriodicMetricReaderSdk : StableMetricReader {
     let exporter : StableMetricExporter
     let exportInterval : TimeInterval
     let scheduleQueue = DispatchQueue(label: "org.opentelemetry.StablePeriodicMetricReaderSdk.scheduleQueue")
     let scheduleTimer : DispatchSourceTimer
     var metricProduce : MetricProducer = NoopMetricProducer()
-    
-
 
     init(exporter: StableMetricExporter, exportInterval: TimeInterval = 60.0) {
         self.exporter = exporter
         self.exportInterval = exportInterval
         scheduleTimer = DispatchSource.makeTimerSource(flags: DispatchSource.TimerFlags(), queue: scheduleQueue)
-        
+
+        #if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
         scheduleTimer.setEventHandler { [weak self] in
             autoreleasepool {
                 guard let self = self else {
@@ -29,22 +27,29 @@ public class StablePeriodicMetricReaderSdk : StableMetricReader {
                 _ = self.doRun()
             }
         }
+        #else
+        scheduleTimer.setEventHandler { [weak self] in
+            guard let self = self else {
+                return
+            }
+            _ = self.doRun()
+        }
+        #endif
     }
     
-  deinit {
-    _ = shutdown()
-    scheduleTimer.activate()
-  }
+    deinit {
+        _ = shutdown()
+        scheduleTimer.activate()
+    }
     
-    
-   public func register(registration: CollectionRegistration) {
+    public func register(registration: CollectionRegistration) {
         if let newProducer = registration as? MetricProducer {
             metricProduce = newProducer
             start()
         } else {
             // todo: error : unrecognized CollectionRegistration
         }
- 
+        
     }
     
     func start() {
@@ -58,20 +63,22 @@ public class StablePeriodicMetricReaderSdk : StableMetricReader {
 
     private func doRun() -> ExportResult {
         let metricData = metricProduce.collectAllMetrics()
+
         if metricData.isEmpty {
             return .success
         }
-        return exporter.export(metrics: metricData)
         
-
+        return exporter.export(metrics: metricData)
     }
 
     public func shutdown() -> ExportResult {
         scheduleTimer.suspend()
+
         if !scheduleTimer.isCancelled {
             scheduleTimer.cancel()
             scheduleTimer.resume()
         }
+
         return exporter.shutdown()
     }
     
@@ -82,7 +89,4 @@ public class StablePeriodicMetricReaderSdk : StableMetricReader {
     public func getDefaultAggregation(for instrument: InstrumentType) -> Aggregation {
         return exporter.getDefaultAggregation(for: instrument)
     }
-    
 }
-
-

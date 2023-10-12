@@ -4,6 +4,9 @@
  */
 
 import Foundation
+
+#if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
+
 #if os(iOS) || os(tvOS)
 import UIKit
 #elseif os(watchOS)
@@ -78,3 +81,4 @@ enum InstrumentationUtils {
         return false
     }()
 }
+#endif

@@ -3,14 +3,19 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#if !os(watchOS)
+#if os(macOS) || os(iOS) || os(tvOS)
 
 import Foundation
-import os
+
 import OpenTelemetryApi
 import OpenTelemetrySdk
 
-/// A span processor that decorates spans with the origin attribute
+// A span processor that decorates spans with the origin attribute
+
+#if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
+import os
+#endif
+
 @available(macOS 10.14, iOS 12.0, tvOS 12.0, *)
 public class SignPostIntegration: SpanProcessor {
   

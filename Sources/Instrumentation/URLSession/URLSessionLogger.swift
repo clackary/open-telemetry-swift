@@ -4,32 +4,42 @@
  */
 
 import Foundation
+
+#if os(Linux)
+import FoundationNetworking
+#endif
+
 import OpenTelemetryApi
 import OpenTelemetrySdk
+
+#if canImport(os.log)
 import os.log
+#endif
+
 #if os(iOS) && !targetEnvironment(macCatalyst)
-    import NetworkStatus
-#endif // os(iOS) && !targetEnvironment(macCatalyst)
+import NetworkStatus
+#endif
 
 class URLSessionLogger {
     static var runningSpans = [String: Span]()
     static var runningSpansQueue = DispatchQueue(label: "io.opentelemetry.URLSessionLogger")
+    
     #if os(iOS) && !targetEnvironment(macCatalyst)
+    static var netstatInjector: NetworkStatusInjector? = { () -> NetworkStatusInjector? in
+        do {
+            let netstats = try NetworkStatus()
 
-        static var netstatInjector: NetworkStatusInjector? = { () -> NetworkStatusInjector? in
-            do {
-                let netstats = try NetworkStatus()
-                return NetworkStatusInjector(netstat: netstats)
-            } catch {
-                if #available(iOS 14, macOS 11, tvOS 14, *) {
-                    os_log(.error, "failed to initialize network connection status: %@", error.localizedDescription)
-                } else {
-                    NSLog("failed to initialize network connection status: %@", error.localizedDescription)
-                }
-
-                return nil
+            return NetworkStatusInjector(netstat: netstats)
+        } catch {
+            if #available(iOS 14, macOS 11, tvOS 14, *) {
+                os_log(.error, "failed to initialize network connection status: %@", error.localizedDescription)
+            } else {
+                NSLog("failed to initialize network connection status: %@", error.localizedDescription)
             }
-        }()
+
+            return nil
+        }
+    }()
     #endif // os(iOS) && !targetEnvironment(macCatalyst)
 
     /// This methods creates a Span for a request, and optionally injects tracing headers, returns a  new request if it was needed to create a new one to add the tracing headers
@@ -147,7 +157,11 @@ class URLSessionLogger {
         }
         instrumentation.configuration.injectCustomHeaders?(&request, span)
         var instrumentedRequest = request
+
+        #if !os(Linux)
         objc_setAssociatedObject(instrumentedRequest, &URLSessionInstrumentation.instrumentedKey, true, .OBJC_ASSOCIATION_COPY_NONATOMIC)
+        #endif
+
         let propagators = OpenTelemetry.instance.propagators
         var traceHeaders = tracePropagationHTTPHeaders(span: span, textMapPropagator: propagators.textMapPropagator, textMapBaggagePropagator: propagators.textMapBaggagePropagator)
         if let originalHeaders = request.allHTTPHeaderFields {

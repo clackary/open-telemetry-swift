@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#if !os(watchOS)
+#if os(macOS) || os(iOS) || os(tvOS)
 
 import Foundation
 import Reachability
