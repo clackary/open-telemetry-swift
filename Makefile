@@ -1,71 +1,43 @@
+
+# This Makefile may be used to build our fork of opentelemetry-swift for Linux. You may also use it
+# on MacOS if you prefer the approach over Xcode (I do).
+
 PROJECT_NAME="opentelemetry-swift-Package"
 
-XCODEBUILD_OPTIONS_IOS=\
-	-configuration Debug \
-	-destination platform='iOS Simulator,name=iPhone 14,OS=latest' \
-	-scheme $(PROJECT_NAME) \
-	-workspace .
+uname := $(shell uname)
 
-XCODEBUILD_OPTIONS_TVOS=\
-	-configuration Debug \
-	-destination platform='tvOS Simulator,name=Apple TV 4K (3rd generation),OS=latest' \
-	-scheme $(PROJECT_NAME) \
-	-workspace .
+SWIFTC_FLAGS += --configuration debug -Xswiftc -g
+SWIFT := swift
 
-XCODEBUILD_OPTIONS_WATCHOS=\
-	-configuration Debug \
-	-destination platform='watchOS Simulator,name=Apple Watch Series 8 (45mm),OS=latest' \
-	-scheme $(PROJECT_NAME) \
-	-workspace .
+CC := gcc
+CFLAGS := -ansi -pedantic -Wall -W -Werror -g -fPIC
 
-.PHONY: setup-brew
-setup-brew:
-	brew update && brew install xcbeautify
+SRCDIR := Sources/libpl
+INCDIR := $(SRCDIR)/include
+LIBDIR := ./lib
 
-.PHONY: build-ios
-build-ios:
-	set -o pipefail && xcodebuild $(XCODEBUILD_OPTIONS_IOS) build | xcbeautify
+SRC :=  $(wildcard $(SRCDIR)/*.c)
+OBJ := $(SRC:$(SRCDIR)/%.c=$(SRCDIR)/%.o)
 
-.PHONY: build-tvos
-build-tvos:
-	set -o pipefail && xcodebuild $(XCODEBUILD_OPTIONS_TVOS) build | xcbeautify
+LIBNAME := libpl.so
+LDFLAGS :=  -L.
+LDLIBS  :=  -l$(...)
 
-.PHONY: build-watchos
-build-watchos:
-	set -o pipefail && xcodebuild $(XCODEBUILD_OPTIONS_IOS) build | xcbeautify
+.PHONY: build clean realclean reset etags ctags
 
-.PHONY: build-for-testing-ios
-build-for-testing-ios:
-	set -o pipefail && xcodebuild $(XCODEBUILD_OPTIONS_IOS) build-for-testing | xcbeautify
+$(info Building for: [${uname}])
 
-.PHONY: build-for-testing-tvos
-build-for-testing-tvos:
-	set -o pipefail && xcodebuild $(XCODEBUILD_OPTIONS_TVOS) build-for-testing | xcbeautify
+$(LIBNAME): CFLAGS += -fPIC
+$(LIBNAME): LDFLAGS += -shared
+$(LIBNAME): $(OBJ)
+	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
-.PHONY: build-for-testing-watchos
-build-for-testing-watchos:
-	set -o pipefail && xcodebuild $(XCODEBUILD_OPTIONS_WATCHOS) build-for-testing | xcbeautify
+$(SRCDIR)/%.o: $(SRCDIR)/%.c
+	$(CC) $(CFLAGS) -I $(INCDIR) -o $@ -c $<
 
-.PHONY: test-ios
-test-ios:
-	set -o pipefail && xcodebuild $(XCODEBUILD_OPTIONS_IOS) test | xcbeautify
+$(LIBDIR):
+	@mkdir -p $@
 
-.PHONY: test-tvos
-test-tvos:
-	set -o pipefail && xcodebuild $(XCODEBUILD_OPTIONS_TVOS) test | xcbeautify
-
-.PHONY: test-watchos
-test-watchos:
-	set -o pipefail && xcodebuild $(XCODEBUILD_OPTIONS_WATCHOS) test | xcbeautify
-
-.PHONY: test-without-building-ios
-test-without-building-ios:
-	set -o pipefail && xcodebuild $(XCODEBUILD_OPTIONS_IOS) test-without-building | xcbeautify
-
-.PHONY: test-without-building-tvos
-test-without-building-tvos:
-	set -o pipefail && xcodebuild $(XCODEBUILD_OPTIONS_TVOS) test-without-building | xcbeautify
-
-.PHONY: test-without-building-watchos
-test-without-building-watchos:
-	set -o pipefail && xcodebuild $(XCODEBUILD_OPTIONS_WATCHOS) test-without-building | xcbeautify
+opentelemetry: SWIFTC_FLAGS+=--configuration debug -Xswiftc -g
+opentelemetry:
+	${SWIFT} build $(SWIFTC_FLAGS) $(SWIFT_FLAGS) -Xlinker -L$(LIBDIR)
