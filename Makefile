@@ -16,7 +16,7 @@ SWIFTC_FLAGS += --configuration debug -Xswiftc -g
 SWIFT := swift
 
 CC := gcc
-CFLAGS := -ansi -pedantic -Wall -W -Werror -g -fPIC
+CFLAGS := -ansi -pedantic -Wall -Werror -g
 
 SRCDIR := Sources/libpl
 INCDIR := $(SRCDIR)/include
