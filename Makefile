@@ -8,6 +8,9 @@
 # would any normal function) the way we use it. So Swift prohibits the compilation of any code referencing
 # the getcontext symbol.
 
+# If this Makefile gets any more difficult to manage between MacOS and Linux, we should split it into two
+# separate, OS-specific files.
+
 uname := $(shell uname)
 
 SWIFTC_FLAGS += --configuration debug -Xswiftc -g
