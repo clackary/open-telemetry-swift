@@ -49,6 +49,7 @@ Package.pins
 .swiftpm
 
 .build/
+lib/
 
 # CocoaPods
 #
