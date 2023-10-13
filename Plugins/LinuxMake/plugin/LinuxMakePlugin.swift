@@ -1,43 +1,25 @@
 
-// This SPM build plugin is a proof-of-concept used to evaluate how we would write a
-// build tool plugin to create a bundle of Swift code for use by our simulators.
+// This SPM build plugin is used to run the project Makefile on Linux distributions; required
+// due to the need for a C shared library wrapper we've written that allows use of the libc
+// getcontext() function.
 
 import Foundation
 import PackagePlugin
 
 @main
-struct BundleForSimsPlugin: BuildToolPlugin {
+struct LinuxMakePlugin: BuildToolPlugin {
+    static let target = "libpl"
+    
     func createBuildCommands(
         context: PackagePlugin.PluginContext,
         target: PackagePlugin.Target
     ) throws -> [PackagePlugin.Command] {
         return [
           .buildCommand(
-            displayName: "Bundle Simulator Resources",
-            executable: try context.tool(named: "BundleForSims").path,
-            arguments: [context.package.directory]
+            displayName: "Runs Makefile on Linux",
+            executable: try context.tool(named: "LinuxMake").path,
+            arguments: [context.package.directory, target]
           )
         ]
     }
 }
-
-// @main
-// struct BundleForSimsPlugin: BuildToolPlugin {
-//     func createBuildCommands(
-//         context: PackagePlugin.PluginContext,
-//         target: PackagePlugin.Target
-//     ) throws -> [PackagePlugin.Command] {
-//         let cmd = "/bin/ls"
-//         let output = "/tmp/bundler.log"
-
-//         print(context.package.directory)
-        
-//         return [
-//           .buildCommand(
-//             displayName: "Bundle Simulator Resources",
-//             executable: try context.tool(named: "BundleForSims").path,
-//             arguments: [cmd, "-l", "/tmp/", output]
-//           )
-//         ]
-//     }
-// }
