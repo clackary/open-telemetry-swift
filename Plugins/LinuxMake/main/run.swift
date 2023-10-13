@@ -44,14 +44,6 @@ enum LinuxMake {
 
         return (out, p.terminationStatus)
     }
-
-    static func removePath(path: String) throws {
-        let fm = FileManager.default
-        
-        if fm.fileExists(atPath: path) {
-            try fm.removeItem(atPath: path)
-        }
-    }
 }
 
 private enum LinuxMakeError: Error {
