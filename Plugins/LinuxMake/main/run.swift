@@ -8,7 +8,7 @@ import Foundation
 enum LinuxMake {
     static func main() throws {
         guard CommandLine.arguments.count == 2 else {
-            throw LinuxMakeError.invalidArguments("LinuxSims: wrong number of arguments: " + String(CommandLine.arguments.count))
+            throw LinuxMakeError.invalidArguments("LinuxMake: wrong number of arguments: " + String(CommandLine.arguments.count))
         }
 
         let cwd = CommandLine.arguments[1]
