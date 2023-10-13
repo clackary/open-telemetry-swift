@@ -20,12 +20,12 @@ LIBDIR := ./lib
 CC := gcc
 CFLAGS := -ansi -pedantic -Wall -Werror -g -I$(INCDIR) -fPIC
 
-SRC :=  $(wildcard $(SRCDIR)/*.c)
+SRC := $(wildcard $(SRCDIR)/*.c)
 OBJ := $(SRC:$(SRCDIR)/%.c=$(LIBDIR)/%.o)
 
 LIBNAME := $(LIBDIR)/libpl.so
-LDFLAGS :=  -L.
-LDLIBS  :=  -l$(...)
+LDFLAGS := -L.
+LDLIBS := -l$(...)
 
 .PHONY: all clean ctags etags libpl realclean reset resolve update
 
