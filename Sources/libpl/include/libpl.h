@@ -6,7 +6,7 @@
 #ifndef _LIBPL_H
 #define _LIBPS_H
 
-#include <ucontex.ht>
+#include <ucontext.h>
 
 int activity_create(ucontext_t *ucp);
 

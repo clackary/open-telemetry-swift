@@ -15,15 +15,15 @@ uname := $(shell uname)
 SWIFTC_FLAGS += --configuration debug -Xswiftc -g
 SWIFT := swift
 
-CC := gcc
-CFLAGS := -ansi -pedantic -Wall -Werror -g
-
 SRCDIR := Sources/libpl
 INCDIR := $(SRCDIR)/include
 LIBDIR := ./lib
 
+CC := gcc
+CFLAGS := -ansi -pedantic -Wall -Werror -g -I$(INCDIR)
+
 SRC :=  $(wildcard $(SRCDIR)/*.c)
-OBJ := $(SRC:$(SRCDIR)/%.c=$(SRCDIR)/%.o)
+OBJ := $(SRC:$(SRCDIR)/%.c=$(LIBDIR)/%.o)
 
 LIBNAME := $(LIBDIR)/libpl.so
 LDFLAGS :=  -L.
@@ -33,18 +33,19 @@ LDLIBS  :=  -l$(...)
 
 $(info Building for: [${uname}])
 
-all: $(LIBNAME) opentelemetry
+all: libpl opentelemetry
+
+libpl: $(LIBDIR) $(LIBNAME)
 
 $(LIBNAME): CFLAGS += -fPIC
 $(LIBNAME): LDFLAGS += -shared
 $(LIBNAME): $(OBJ)
-	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
-
-$(LIBDIR)/%.o: $(SRCDIR)/%.c | $(LIBDIR)
-	$(CC) $(CFLAGS) -I $(INCDIR) -o $@ -c $<
+	$(CC) $(LDFLAGS) $^ -o $@
 
 $(LIBDIR):
 	@mkdir -p $@
+$(LIBDIR)/%.o: $(SRCDIR)/%.c | $(LIBDIR)
+	$(CC) $(CFLAGS) -o $@ -c $<
 
 opentelemetry: SWIFTC_FLAGS+=--configuration debug -Xswiftc -g
 opentelemetry:
@@ -67,6 +68,7 @@ reset:
 
 clean:
 	$(SWIFT) package clean
+	@rm -rf lib
 
 # NB: Be careful with the realclean target on MacOS, as it will affect your other local Swift project caching.
 
