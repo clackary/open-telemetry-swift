@@ -21,7 +21,7 @@ enum LinuxMake {
         if (rval == 0) {
             debugPrint("LinuxMake: make for \(target) success:")
         } else {
-            debugPrint("LinuxMake: make for \(target) failed:")
+            debugPrint("LinuxMake: make for \(target) failed: exit code: \(rval)")
         }
 
         debugPrint(cmdout)
@@ -54,7 +54,7 @@ enum LinuxMake {
     }
 }
 
-private enum MakeLinuxError: Error {
+private enum LinuxMakeError: Error {
     case invalidArguments(String)
     case error(String)
 }
