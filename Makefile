@@ -20,7 +20,7 @@ INCDIR := $(SRCDIR)/include
 LIBDIR := ./lib
 
 CC := gcc
-CFLAGS := -ansi -pedantic -Wall -Werror -g -I$(INCDIR)
+CFLAGS := -ansi -pedantic -Wall -Werror -g -I$(INCDIR) -fPIC
 
 SRC :=  $(wildcard $(SRCDIR)/*.c)
 OBJ := $(SRC:$(SRCDIR)/%.c=$(LIBDIR)/%.o)
@@ -29,22 +29,25 @@ LIBNAME := $(LIBDIR)/libpl.so
 LDFLAGS :=  -L.
 LDLIBS  :=  -l$(...)
 
-.PHONY: all ctags etags clean realclean reset resolve update
+.PHONY: all clean ctags etags libpl realclean reset resolve update
 
 $(info Building for: [${uname}])
 
+ifeq ($(uname), Linux)
 all: libpl opentelemetry
+else
+all: opentelemetry
+endif
 
 libpl: $(LIBDIR) $(LIBNAME)
 
-$(LIBNAME): CFLAGS += -fPIC
 $(LIBNAME): LDFLAGS += -shared
 $(LIBNAME): $(OBJ)
 	$(CC) $(LDFLAGS) $^ -o $@
 
 $(LIBDIR):
 	@mkdir -p $@
-$(LIBDIR)/%.o: $(SRCDIR)/%.c | $(LIBDIR)
+$(LIBDIR)/%.o: $(SRCDIR)/%.c
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 opentelemetry: SWIFTC_FLAGS+=--configuration debug -Xswiftc -g
@@ -77,9 +80,7 @@ realclean: clean
 	@rm -rf .build
 	@rm -rf ~/Library/Caches/org.swift.swiftpm
 	@rm -rf ~/Library/org.swift.swiftpm
-endif
-
-ifeq ($(uname), Linux)
+else
 realclean: clean
 	@rm -rf .build
 endif
