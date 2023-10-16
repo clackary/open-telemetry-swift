@@ -41,7 +41,7 @@ let package = Package(
     ],
     targets: [
       .systemLibrary(
-        name: "Cibpl",
+        name: "Clibpl",
         path: "./Sources/Clibpl"
       ),
       .target(
