@@ -33,7 +33,10 @@ let package = Package(
     .package(name: "LinuxMake", path: "./Plugins/LinuxMake"),
   ],
   targets: [
-    .systemLibrary(name: "libpl"),
+    .systemLibrary(
+      name: "Clibpl",
+      path: "./Sources/Clibpl"
+    ),
     .plugin(name: "LinuxMakePlugin",
             capability: .buildTool(),
             dependencies: ["LinuxMake"]),
