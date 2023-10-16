@@ -37,10 +37,17 @@ let package = Package(
       name: "Clibpl",
       path: "./Sources/Clibpl"
     ),
-    .plugin(name: "LinuxMakePlugin",
-            capability: .buildTool(),
-            dependencies: ["LinuxMake"]),
-    .target(name: "TaskSupport", dependencies: ["libpl"]),
+    // .plugin(name: "LinuxMakePlugin",
+    //         capability: .buildTool(),
+    //         dependencies: ["LinuxMake"]),
+
+    .target(
+      name: "TaskSupport",
+      dependencies: ["Clibpl"],
+      linkerSettings: [
+        .unsafeFlags(["-Xlinker", "-L\(staticLibraryPath("Clibpl"))",
+                      "-Xlinker", "-lpl",]),
+      ]),
     .target(name: "OpenTelemetryApi", dependencies: ["TaskSupport"]),
     .target(name: "OpenTelemetrySdk",
             dependencies: ["OpenTelemetryApi"]),
