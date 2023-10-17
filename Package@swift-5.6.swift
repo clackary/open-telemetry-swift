@@ -1,7 +1,11 @@
 // swift-tools-version:5.6
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
+import struct Foundation.URL
+
 import PackageDescription
+
+let platform = SupportedPlatform.discover()
 
 let package = Package(
     name: "opentelemetry-swift",
@@ -46,11 +50,7 @@ let package = Package(
       ),
       .target(
         name: "TaskSupport",
-        dependencies: ["Clibpl"],
-        linkerSettings: [
-          .unsafeFlags(["-Xlinker", "-L\(staticLibraryPath("Clibpl"))",
-                        "-Xlinker", "-lpl",]),
-        ]),
+        dependencies: ["Clibpl"]),
       .target(name: "OpenTelemetryApi", dependencies: ["TaskSupport"]),
       .target(name: "OpenTelemetrySdk",
               dependencies: ["OpenTelemetryApi"]),

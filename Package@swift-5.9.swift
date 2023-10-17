@@ -30,24 +30,15 @@ let package = Package(
     .package(url: "https://github.com/apple/swift-log.git", from: "1.4.4"),
     .package(url: "https://github.com/apple/swift-metrics.git", from: "2.1.1"),
     .package(url: "https://github.com/ashleymills/Reachability.swift", from: "5.1.0"),
-    .package(name: "LinuxMake", path: "./Plugins/LinuxMake"),
   ],
   targets: [
     .systemLibrary(
       name: "Clibpl",
       path: "./Sources/Clibpl"
     ),
-    // .plugin(name: "LinuxMakePlugin",
-    //         capability: .buildTool(),
-    //         dependencies: ["LinuxMake"]),
-
     .target(
       name: "TaskSupport",
-      dependencies: ["Clibpl"],
-      linkerSettings: [
-        .unsafeFlags(["-Xlinker", "-L\(staticLibraryPath("Clibpl"))",
-                      "-Xlinker", "-lpl",]),
-      ]),
+      dependencies: ["Clibpl"]),
     .target(name: "OpenTelemetryApi", dependencies: ["TaskSupport"]),
     .target(name: "OpenTelemetrySdk",
             dependencies: ["OpenTelemetryApi"]),
@@ -65,7 +56,7 @@ let package = Package(
               .product(name: "Reachability", package: "Reachability.swift", condition: .when(platforms: [.iOS, .macOS, .tvOS, .macCatalyst]))
             ],
             path: "Sources/Instrumentation/NetworkStatus",
-            linkerSettings: [.linkedFramework("CoreTelephony", .when(platforms: [.iOS], configuration: nil))]),)
+            linkerSettings: [.linkedFramework("CoreTelephony", .when(platforms: [.iOS], configuration: nil))]),
     .target(name: "SignPostIntegration",
             dependencies: ["OpenTelemetrySdk"],
             path: "Sources/Instrumentation/SignPostIntegration",

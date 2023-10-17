@@ -46,11 +46,7 @@ let package = Package(
       ),
       .target(
         name: "TaskSupport",
-        dependencies: ["Clibpl"],
-        linkerSettings: [
-          .unsafeFlags(["-Xlinker", "-L\(staticLibraryPath("Clibpl"))",
-                        "-Xlinker", "-lpl",]),
-        ]),
+        dependencies: ["Clibpl"]),
       .target(name: "OpenTelemetryApi", dependencies: ["TaskSupport"]),
       .target(name: "OpenTelemetrySdk",
               dependencies: ["OpenTelemetryApi"]),
