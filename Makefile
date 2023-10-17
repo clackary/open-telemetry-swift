@@ -53,7 +53,7 @@ $(LIBDIR)/%.o: $(SRCDIR)/%.c
 
 opentelemetry: SWIFTC_FLAGS+=--configuration debug -Xswiftc -g
 opentelemetry:
-	${SWIFT} build $(SWIFTC_FLAGS) $(SWIFT_FLAGS) -Xlinker -L$(LIBDIR)
+	${SWIFT} build $(SWIFTC_FLAGS) $(SWIFT_FLAGS)
 
 update: resolve
 	$(SWIFT) package update
