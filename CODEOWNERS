@@ -1,3 +1,13 @@
+
+;;; This fork is a port of opentelemetry-swift to Linux, while maintaining backwards compatibility
+;;; with MacOS as found in the original work.
+
+CODEOWNERS @youngde811
+
+;;; This port maintains the original Apache license and is copyright David E. Young (youngde811@pobox.com).
+
+;;; The following is from the original work at https://github.com/open-telemetry/opentelemetry-swift:
+
 #####################################################
 #
 # List of approvers for OpenTelemetry Swift SDK

@@ -1,71 +1,87 @@
-PROJECT_NAME="opentelemetry-swift-Package"
 
-XCODEBUILD_OPTIONS_IOS=\
-	-configuration Debug \
-	-destination platform='iOS Simulator,name=iPhone 14,OS=latest' \
-	-scheme $(PROJECT_NAME) \
-	-workspace .
+# This Makefile may be used to build our fork of opentelemetry-swift for Linux. You may also use it
+# on MacOS if you prefer the approach over Xcode (I do).
 
-XCODEBUILD_OPTIONS_TVOS=\
-	-configuration Debug \
-	-destination platform='tvOS Simulator,name=Apple TV 4K (3rd generation),OS=latest' \
-	-scheme $(PROJECT_NAME) \
-	-workspace .
+# The Linux port of opentelemetry-swift contains a bit of C, used to construct a small shared library
+# that wraps the libc getcontext() function. This is required because Swift believes that in every use
+# case, getcontext() will return twice (a la setjmp()/longjmp()), when in fact it returns just once (as
+# would any normal function) the way we use it. So Swift prohibits the compilation of any code referencing
+# the getcontext symbol.
 
-XCODEBUILD_OPTIONS_WATCHOS=\
-	-configuration Debug \
-	-destination platform='watchOS Simulator,name=Apple Watch Series 8 (45mm),OS=latest' \
-	-scheme $(PROJECT_NAME) \
-	-workspace .
+# If this Makefile gets any more difficult to manage between MacOS and Linux, we should split it into two
+# separate, OS-specific files.
 
-.PHONY: setup-brew
-setup-brew:
-	brew update && brew install xcbeautify
+uname := $(shell uname)
 
-.PHONY: build-ios
-build-ios:
-	set -o pipefail && xcodebuild $(XCODEBUILD_OPTIONS_IOS) build | xcbeautify
+SWIFTC_FLAGS += --configuration debug -Xswiftc -g
+SWIFT := swift
 
-.PHONY: build-tvos
-build-tvos:
-	set -o pipefail && xcodebuild $(XCODEBUILD_OPTIONS_TVOS) build | xcbeautify
+SRCDIR := Sources/libpl
+INCDIR := $(SRCDIR)/include
+LIBDIR := ./lib
 
-.PHONY: build-watchos
-build-watchos:
-	set -o pipefail && xcodebuild $(XCODEBUILD_OPTIONS_IOS) build | xcbeautify
+CC := gcc
+CFLAGS := -ansi -pedantic -Wall -Werror -g -I$(INCDIR) -fPIC
 
-.PHONY: build-for-testing-ios
-build-for-testing-ios:
-	set -o pipefail && xcodebuild $(XCODEBUILD_OPTIONS_IOS) build-for-testing | xcbeautify
+SRC := $(wildcard $(SRCDIR)/*.c)
+OBJ := $(SRC:$(SRCDIR)/%.c=$(LIBDIR)/%.o)
 
-.PHONY: build-for-testing-tvos
-build-for-testing-tvos:
-	set -o pipefail && xcodebuild $(XCODEBUILD_OPTIONS_TVOS) build-for-testing | xcbeautify
+LIBNAME := $(LIBDIR)/libpl.so
+LDFLAGS := -L.
+LDLIBS := -l$(...)
 
-.PHONY: build-for-testing-watchos
-build-for-testing-watchos:
-	set -o pipefail && xcodebuild $(XCODEBUILD_OPTIONS_WATCHOS) build-for-testing | xcbeautify
+.PHONY: all clean ctags etags libpl realclean reset resolve update
 
-.PHONY: test-ios
-test-ios:
-	set -o pipefail && xcodebuild $(XCODEBUILD_OPTIONS_IOS) test | xcbeautify
+$(info Building for: [${uname}])
 
-.PHONY: test-tvos
-test-tvos:
-	set -o pipefail && xcodebuild $(XCODEBUILD_OPTIONS_TVOS) test | xcbeautify
+ifeq ($(uname), Linux)
+all: libpl opentelemetry
+else
+all: opentelemetry
+endif
 
-.PHONY: test-watchos
-test-watchos:
-	set -o pipefail && xcodebuild $(XCODEBUILD_OPTIONS_WATCHOS) test | xcbeautify
+libpl: $(LIBDIR) $(LIBNAME)
 
-.PHONY: test-without-building-ios
-test-without-building-ios:
-	set -o pipefail && xcodebuild $(XCODEBUILD_OPTIONS_IOS) test-without-building | xcbeautify
+$(LIBNAME): LDFLAGS += -shared
+$(LIBNAME): $(OBJ)
+	$(CC) $(LDFLAGS) $^ -o $@
 
-.PHONY: test-without-building-tvos
-test-without-building-tvos:
-	set -o pipefail && xcodebuild $(XCODEBUILD_OPTIONS_TVOS) test-without-building | xcbeautify
+$(LIBDIR):
+	@mkdir -p $@
+$(LIBDIR)/%.o: $(SRCDIR)/%.c
+	$(CC) $(CFLAGS) -o $@ -c $<
 
-.PHONY: test-without-building-watchos
-test-without-building-watchos:
-	set -o pipefail && xcodebuild $(XCODEBUILD_OPTIONS_WATCHOS) test-without-building | xcbeautify
+opentelemetry: SWIFTC_FLAGS+=--configuration debug -Xswiftc -g
+opentelemetry:
+	${SWIFT} build $(SWIFTC_FLAGS) $(SWIFT_FLAGS)
+
+update: resolve
+	$(SWIFT) package update
+
+resolve:
+	$(SWIFT) package resolve
+
+ctags:
+	ctags -R --languages=swift .
+
+etags:
+	etags -R --languages=swift .
+
+reset:
+	$(SWIFT) package reset
+
+clean:
+	$(SWIFT) package clean
+	@rm -rf lib
+
+# NB: Be careful with the realclean target on MacOS, as it will affect your other local Swift project caching.
+
+ifeq ($(uname), Darwin)
+realclean: clean
+	@rm -rf .build
+	@rm -rf ~/Library/Caches/org.swift.swiftpm
+	@rm -rf ~/Library/org.swift.swiftpm
+else
+realclean: clean
+	@rm -rf .build
+endif

@@ -24,7 +24,6 @@ let package = Package(
       .library(name: "InMemoryExporter", type: .static, targets: ["InMemoryExporter"]),
       .library(name: "DatadogExporter", type: .static, targets: ["DatadogExporter"]),
       .library(name: "NetworkStatus", type: .static, targets: ["NetworkStatus"]),
-      .library(name: "libpl", targets: ["libpl"]),
       .executable(name: "simpleExporter", targets: ["SimpleExporter"]),
       .executable(name: "OTLPExporter", targets: ["OTLPExporter"]),
       .executable(name: "OTLPHTTPExporter", targets: ["OTLPHTTPExporter"]),
@@ -41,8 +40,13 @@ let package = Package(
       .package(name: "Reachability.swift", url: "https://github.com/ashleymills/Reachability.swift", exact: "5.1.0"),
     ],
     targets: [
-      .systemLibrary(name: "libpl"),
-      .target(name: "TaskSupport", dependencies: ["libpl"]),
+      .systemLibrary(
+        name: "Clibpl",
+        path: "./Sources/Clibpl"
+      ),
+      .target(
+        name: "TaskSupport",
+        dependencies: ["Clibpl"]),
       .target(name: "OpenTelemetryApi", dependencies: ["TaskSupport"]),
       .target(name: "OpenTelemetrySdk",
               dependencies: ["OpenTelemetryApi"]),

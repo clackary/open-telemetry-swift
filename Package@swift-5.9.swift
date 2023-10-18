@@ -20,7 +20,6 @@ let package = Package(
     .library(name: "PersistenceExporter", type: .static, targets: ["PersistenceExporter"]),
     .library(name: "InMemoryExporter", type: .static, targets: ["InMemoryExporter"]),
     .library(name: "NetworkStatus", type: .static, targets: ["NetworkStatus"]),
-    .library(name: "libpl", targets: ["libpl"]),
   ],
   dependencies: [
     .package(url: "https://github.com/apple/swift-nio.git", from: "2.0.0"),
@@ -31,8 +30,13 @@ let package = Package(
     .package(url: "https://github.com/ashleymills/Reachability.swift", from: "5.1.0"),
   ],
   targets: [
-    .systemLibrary(name: "libpl"),
-    .target(name: "TaskSupport", dependencies: ["libpl"]),
+    .systemLibrary(
+      name: "Clibpl",
+      path: "./Sources/Clibpl"
+    ),
+    .target(
+      name: "TaskSupport",
+      dependencies: ["Clibpl"]),
     .target(name: "OpenTelemetryApi", dependencies: ["TaskSupport"]),
     .target(name: "OpenTelemetrySdk",
             dependencies: ["OpenTelemetryApi"]),
