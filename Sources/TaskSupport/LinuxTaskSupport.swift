@@ -11,7 +11,7 @@
 #if os(Linux)
 
 import Foundation
-import libpl
+import Clibpl
 
 @_silgen_name("activity_create") private func activity_create(_ dso: UnsafeRawPointer?, _ buf: UnsafeRawPointer?) -> Int
 
