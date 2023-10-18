@@ -20,8 +20,6 @@ let package = Package(
     .library(name: "PersistenceExporter", type: .static, targets: ["PersistenceExporter"]),
     .library(name: "InMemoryExporter", type: .static, targets: ["InMemoryExporter"]),
     .library(name: "NetworkStatus", type: .static, targets: ["NetworkStatus"]),
-    .library(name: "libpl", targets: ["libpl"]),
-    .plugin(name: "LinuxMakePlugin", targets: ["LinuxMakePlugin"]),
   ],
   dependencies: [
     .package(url: "https://github.com/apple/swift-nio.git", from: "2.0.0"),
