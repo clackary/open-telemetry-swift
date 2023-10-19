@@ -34,7 +34,7 @@ let package = Package(
     .target(
       name: "TaskSupport",
       dependencies: [
-        .product(name: "CLibpl", condition: .when(platforms: [.linux]))
+        .product(name: "CLibpl", package: "CLibpl", condition: .when(platforms: [.linux]))
       ]
     ),
     .target(name: "OpenTelemetryApi", dependencies: ["TaskSupport"]),
