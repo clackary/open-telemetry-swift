@@ -24,20 +24,12 @@ import CLibpl
 public class ucontext: Hashable, Equatable {
     var context: ucontext_t
 
-    static public func == (a: ucontext, b: ucontext) -> Bool {
-        let size = MemoryLayout<ucontext_t>.size
-        
-        let rval = withUnsafePointer(to: a.context) { aa in
-            withUnsafePointer(to: b.context) { bb in
-                return memcmp(aa, bb, size) == 0
-            }
-        }
-
-        return rval
+    static public func == (a: ucontext_t, b: ucontext_t) -> Bool {
+        return a == b
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(self)
+        hasher.combine(context)
     }
 
     public init(context: ucontext_t) {
