@@ -11,9 +11,9 @@
 #if os(Linux)
 
 import Foundation
-import Clibpl
+import CLibpl
 
-@_silgen_name("activity_create") private func activity_create(_ dso: UnsafeRawPointer?, _ buf: UnsafeRawPointer?) -> Int
+// @_silgen_name("activity_create") private func activity_create(_ dso: UnsafeRawPointer?, _ buf: UnsafeRawPointer?) -> Int
 
 public class LinuxTaskSupport {
     let parentActivity: parent_activity_id_t = 0  // Linux offers no connectivity to parent contexts
@@ -35,12 +35,12 @@ public class LinuxTaskSupport {
     }
 
     func getContext() -> activity_id_t {
-        let dso = UnsafeMutableRawPointer(mutating: #dsohandle)
+        // let dso = UnsafeMutableRawPointer(mutating: #dsohandle)
         var ucp: ucontext_t = ucontext_t()
 
         print("LinuxTaskSupport.createActivityContext(): attempting to create a context: ucp: \(ucp)")
 
-        guard activity_create(dso, &ucp) == 0 else {
+        guard activity_create(&ucp) == 0 else {
             print("LinuxTaskSupport.createActivityContext(): failed to get user context!")
             return ucontext(context: ucp)
         }
