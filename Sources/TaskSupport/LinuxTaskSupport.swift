@@ -15,17 +15,21 @@ import CLibpl
 
 public class LinuxTaskSupport {
     public func getIdentifiers() -> (activity_id_t, parent_activity_id_t) {
-        let cfp, pfp = getContext()
+        let (cfp, pfp) = getContext()
         
         return (cfp, pfp)
     }
 
     public func getCurrentIdentifier() -> activity_id_t {
-        return getContext()
+        let (cfp, _) = getContext()
+        
+        return cfg
     }
 
     public func createActivityContext() -> (activity_id_t, ScopeElement) {
-        return (getContext(), ScopeElement(scope: 0))
+        let (cfp, _) = getContext()
+        
+        return (cfp, ScopeElement(scope: 0))
     }
 
     public func leaveScope(scope: ScopeElement) {
@@ -38,7 +42,7 @@ public class LinuxTaskSupport {
 
         guard getframep(&current, &parent) == 0 else {
             print("LinuxTaskSupport.createActivityContext(): failed to retrieve the stack identifiers!")
-            return 0
+            return (0, 0)
         }
 
         return (current, parent)
