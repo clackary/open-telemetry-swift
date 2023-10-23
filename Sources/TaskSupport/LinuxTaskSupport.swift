@@ -42,7 +42,7 @@ public class LinuxTaskSupport {
             return 0
         }
 
-        print("LinuxTaskSupport.createActivityContext(): successfully created a stack identifier: \(identifer)")
+        print("LinuxTaskSupport.createActivityContext(): successfully created a stack identifier: \(identifier)")
 
         return identifier
     }
