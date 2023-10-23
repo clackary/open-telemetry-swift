@@ -18,7 +18,7 @@ class DefaultActivityContextManager: ContextManager {
 
     let rlock = NSRecursiveLock()
 
-    var contextMap = [ucontext: [String: AnyObject]]()
+    var contextMap = [activity_id_t: [String: AnyObject]]()
 
     func getCurrentContextValue(forKey key: OpenTelemetryContextKeys) -> AnyObject? {
         let (activityContext, _) = TaskSupport.instance.getIdentifiers()

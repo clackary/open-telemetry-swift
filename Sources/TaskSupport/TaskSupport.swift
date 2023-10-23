@@ -15,29 +15,7 @@ public typealias activity_scope_state_s = os_activity_scope_state_s
 
 #else
 
-import CLibpl
-
-// On Linux there is no equivalent of the os.activity library. We've chosen to use the POSIX
-// ucontext API to serve as an analog, but as of this writing it's uncertain whether or not
-// this will be sufficient.
-
-public class ucontext: Hashable, Equatable {
-    var context: ucontext_t
-
-    static public func == (a: ucontext_t, b: ucontext_t) -> Bool {
-        return a == b
-    }
-
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(context)
-    }
-
-    public init(context: ucontext_t) {
-        self.context = context
-    }
-}
-
-public typealias activity_id_t = ucontext
+public typealias activity_id_t = UInt64
 public typealias parent_activity_id_t = UInt64  // there's no way to obtain a context parent on Linux
 public typealias activity_scope_state_s = UInt64  // this is an opaque structure on MacOS
 

@@ -13,8 +13,6 @@
 import Foundation
 import CLibpl
 
-// @_silgen_name("activity_create") private func activity_create(_ dso: UnsafeRawPointer?, _ buf: UnsafeRawPointer?) -> Int
-
 public class LinuxTaskSupport {
     let parentActivity: parent_activity_id_t = 0  // Linux offers no connectivity to parent contexts
     
@@ -35,19 +33,18 @@ public class LinuxTaskSupport {
     }
 
     func getContext() -> activity_id_t {
-        // let dso = UnsafeMutableRawPointer(mutating: #dsohandle)
-        var ucp: ucontext_t = ucontext_t()
+        var identifier: activity_id_t = 0
 
-        print("LinuxTaskSupport.createActivityContext(): attempting to create a context: ucp: \(ucp)")
+        print("LinuxTaskSupport.createActivityContext(): attempting to retrieve a stack identifier:")
 
-        guard activity_create(&ucp) == 0 else {
-            print("LinuxTaskSupport.createActivityContext(): failed to get user context!")
-            return ucontext(context: ucp)
+        guard getframep(&identifier) == 0 else {
+            print("LinuxTaskSupport.createActivityContext(): failed to retrieve a stack identifier!")
+            return 0
         }
 
-        print("LinuxTaskSupport.createActivityContext(): successfully created a context: ucp: \(ucp)")
+        print("LinuxTaskSupport.createActivityContext(): successfully created a stack identifier: \(identifer)")
 
-        return ucontext(context: ucp)
+        return identifier
     }
 }
 
