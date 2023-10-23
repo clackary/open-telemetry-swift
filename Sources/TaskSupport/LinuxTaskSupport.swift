@@ -17,7 +17,9 @@ public class LinuxTaskSupport {
     let parentActivity: parent_activity_id_t = 0  // Linux offers no connectivity to parent contexts
     
     public func getIdentifiers() -> (activity_id_t, parent_activity_id_t) {
-        return (getContext(), parentActivity)
+        let cid = getContext()
+        
+        return (cid, cid)
     }
 
     public func getCurrentIdentifier() -> activity_id_t {
@@ -35,14 +37,10 @@ public class LinuxTaskSupport {
     func getContext() -> activity_id_t {
         var identifier: activity_id_t = 0
 
-        print("LinuxTaskSupport.createActivityContext(): attempting to retrieve a stack identifier:")
-
         guard getframep(&identifier) == 0 else {
             print("LinuxTaskSupport.createActivityContext(): failed to retrieve a stack identifier!")
             return 0
         }
-
-        print("LinuxTaskSupport.createActivityContext(): successfully created a stack identifier: \(identifier)")
 
         return identifier
     }

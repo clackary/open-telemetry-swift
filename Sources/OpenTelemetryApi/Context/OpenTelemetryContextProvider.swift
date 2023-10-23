@@ -4,9 +4,9 @@
  */
 
 import Foundation
-// import os.activity
 
-/// Keys used by Opentelemetry to store values in the Context
+// Keys used by Opentelemetry to store values in the Context
+
 public enum OpenTelemetryContextKeys: String {
     case span
     case baggage

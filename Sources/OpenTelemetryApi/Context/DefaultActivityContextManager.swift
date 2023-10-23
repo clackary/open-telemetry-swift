@@ -38,6 +38,8 @@ class DefaultActivityContextManager: ContextManager {
             return nil
         }
 
+        print("DefaultActivityContextManager.getCurrentContextValue(): found item: \(context); key: \(activityContext)")
+
         return context[key.rawValue]
     }
 
