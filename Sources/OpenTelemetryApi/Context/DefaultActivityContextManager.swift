@@ -21,7 +21,7 @@ class DefaultActivityContextManager: ContextManager {
     var contextMap = [activity_id_t: [String: AnyObject]]()
 
     func getCurrentContextValue(forKey key: OpenTelemetryContextKeys) -> AnyObject? {
-        let (activityContext, _) = TaskSupport.instance.getIdentifiers()
+        let (activityIdent, parentIdent) = TaskSupport.instance.getIdentifiers()
 
         rlock.lock()
 
@@ -31,14 +31,15 @@ class DefaultActivityContextManager: ContextManager {
 
         print("DefaultActivityContextManager.getCurrentContextValue():")
         print("  key: \(key)")
-        print("  activityContext: \(activityContext)")
+        print("  activityIdent: \(activityIdent)")
+        print("  parentIdent: \(parentIdent)")
 
-        guard let context = contextMap[activityContext] else {
-            print("  contextMap: no item bound to key: \(activityContext): returning nil")
+        guard let context = contextMap[activityIdent] ?? contextMap[parentIdent] else {
+            print("  contextMap: no item bound to activity: \(activityIdent); parent: \(parentIdent): returning nil")
             return nil
         }
 
-        print("DefaultActivityContextManager.getCurrentContextValue(): found item: \(context); key: \(activityContext)")
+        print("DefaultActivityContextManager.getCurrentContextValue(): found item: \(context); activity: \(activityIdent); parent: \(parentIdent)")
 
         return context[key.rawValue]
     }
