@@ -23,7 +23,7 @@ public class LinuxTaskSupport {
     public func getCurrentIdentifier() -> activity_id_t {
         let (cfp, _) = getContext()
         
-        return cfg
+        return cfp
     }
 
     public func createActivityContext() -> (activity_id_t, ScopeElement) {
