@@ -35,8 +35,8 @@ struct stack {
     }
 }
 
-class DefaultActivityContextManager: ContextManager {
-    static let instance = DefaultActivityContextManager()
+class LinuxActivityContextManager: ContextManager {
+    static let instance = LinuxActivityContextManager()
 
     let rlock = NSRecursiveLock()
 
