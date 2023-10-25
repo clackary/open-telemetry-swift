@@ -40,8 +40,8 @@ public class LinuxTaskSupport {
         var current: activity_id_t = 0
         var parent: activity_id_t = 0
 
-        guard getframep(&current, &parent) == 0 else {
-            print("LinuxTaskSupport.createActivityContext(): failed to retrieve the stack identifiers!")
+        guard get_context(&current, &parent) == 0 else {
+            print("LinuxTaskSupport.createActivityContext(): failed to retrieve the task context!")
             return (0, 0)
         }
 
