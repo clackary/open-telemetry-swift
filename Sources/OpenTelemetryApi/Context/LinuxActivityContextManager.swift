@@ -29,9 +29,7 @@ struct stack {
     }
 
     mutating func remove(_ item: AnyObject) {
-        if let index = _stack.firstIndex(of: item) {
-            _stack.remove(at: index)
-        }
+        _stack.removeAll(where: { item === $0 })
     }
 }
 
@@ -51,12 +49,12 @@ class LinuxActivityContextManager: ContextManager {
             rlock.unlock()
         }
 
-        guard let contextStack = contextMap[activityIdent] else {
+        guard var contextStack = contextMap[activityIdent] else {
             print("LinuxActivityContextManager.getCurrentContextValue(): context map has no stack bound to identifier: \(activityIdent); returning nil")
             return nil
         }
 
-        guard let item = contextStack[key.rawValue].pop() else {
+        guard var item = contextStack[key.rawValue].pop() else {
             print("LinuxActivityContextManager.getCurrentContextValue(): context stack is empty")
             return nil
         }
