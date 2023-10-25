@@ -13,14 +13,14 @@ import Foundation
 
 import TaskSupport
 
-struct stack {
-    var _stack: [AnyObject] = []
+class stack {
+    var _stack = [AnyObject]()
 
-    mutating func push(_ item: AnyObject) {
+    func push(_ item: AnyObject) {
         _stack.append(item)
     }
 
-    mutating func pop() -> AnyObject? {
+    func pop() -> AnyObject? {
         if (_stack.isEmpty) {
             return nil
         }
@@ -28,7 +28,7 @@ struct stack {
         return _stack.removeLast()
     }
 
-    mutating func remove(_ item: AnyObject) {
+    func remove(_ item: AnyObject) {
         _stack.removeAll(where: { item === $0 })
     }
 }
@@ -49,12 +49,16 @@ class LinuxActivityContextManager: ContextManager {
             rlock.unlock()
         }
 
-        guard var contextStack = contextMap[activityIdent] else {
+        guard let contextStack = contextMap[activityIdent] else {
             print("LinuxActivityContextManager.getCurrentContextValue(): context map has no stack bound to identifier: \(activityIdent); returning nil")
             return nil
         }
 
-        guard var item = contextStack[key.rawValue].pop() else {
+        guard let map = contextStack[key.rawValue] else {
+            return nil
+        }
+
+        guard let item = map.pop() else {
             print("LinuxActivityContextManager.getCurrentContextValue(): context stack is empty")
             return nil
         }
@@ -79,9 +83,9 @@ class LinuxActivityContextManager: ContextManager {
             contextMap[activityContext] = [String: stack]()
         }
 
-        print("  contextMap: pushing value \(value) onto stack for key: \(activityContext)")
+        print("LinuxActivityContextManager.setCurrentContextValue(): pushing \(value) onto stack for key: \(activityContext)")
 
-        contextMap[activityContext]?[key.rawValue].push(value)
+        contextMap[activityContext]?[key.rawValue]?.push(value)
     }
 
     func removeContextValue(forKey key: OpenTelemetryContextKeys, value: AnyObject) {
@@ -94,7 +98,7 @@ class LinuxActivityContextManager: ContextManager {
         }
         
         if let currentValue = contextMap[activityContext]?[key.rawValue], currentValue === value {
-            contextMap[activityContext]?[key.rawValue].remove(value)
+            contextMap[activityContext]?[key.rawValue]?.remove(value)
         }
     }
 }
