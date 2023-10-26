@@ -89,19 +89,26 @@ class LinuxActivityContextManager: ContextManager {
     }
 
     func removeContextValue(forKey key: OpenTelemetryContextKeys, value: AnyObject) {
-        let activityContext = TaskSupport.instance.getCurrentIdentifier()
+        let activityIdent = TaskSupport.instance.getCurrentIdentifier()
         
         rlock.lock()
 
         defer {
             rlock.unlock()
         }
-        
-        if let currentValue = contextMap[activityContext]?[key.rawValue], currentValue === value {
-            print("LinuxActivityContextManager.removeContextValue(): forgetting \(value) at key \(activityContext)")
-            
-            contextMap[activityContext]?[key.rawValue]?.remove(value)
+
+        guard let contextStack = contextMap[activityIdent] else {
+            print("LinuxActivityContextManager.removeContextValue(): context map has no stack bound to identifier \(activityIdent)")
+            return nil
         }
+
+        guard let map = contextStack[key.rawValue] else {
+            return nil
+        }
+
+        print("LinuxActivityContextManager.removeContextValue(): removing \(value)")
+        
+        map.remove(value)
     }
 }
 
