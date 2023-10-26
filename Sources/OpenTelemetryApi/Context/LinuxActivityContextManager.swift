@@ -81,16 +81,15 @@ class LinuxActivityContextManager: ContextManager {
             contextMap[activityIdent] = [String: stack]()
         }
 
-        print("LinuxActivityContextManager.setCurrentContextValue(): pushing \(value) onto stack for key: \(activityContext)")
+        print("LinuxActivityContextManager.setCurrentContextValue(): pushing \(value) onto stack for key: \(activityIdent)")
 
-        contextMap[activityContext]?[key.rawValue]?.push(value)
+        contextMap[activityIdent]?[key.rawValue]?.push(value)
     }
 
     func removeContextValue(forKey key: OpenTelemetryContextKeys, value: AnyObject) {
         let activityIdent = TaskSupport.instance.getCurrentIdentifier()
 
-        print("LinuxActivityContextManager.removeContextValue(): id: \(activityIdent)")
-        print("LinuxActivityContextManager.removeContextValue(): remove: \(value); key: \(key)")
+        print("LinuxActivityContextManager.removeContextValue(): remove: \(value); key: \(key); id: \(activityIdent)")
         
         rlock.lock()
 

@@ -38,7 +38,7 @@ public struct OpenTelemetryContextProvider {
     }
 
     public func removeContextForSpan(_ span: Span) {
-        print("OpenTelemetryContextProvider.removeContextForSpan(): forgetting span: \(spa)")
+        print("OpenTelemetryContextProvider.removeContextForSpan(): forgetting span: \(span)")
         
         contextManager.removeContextValue(forKey: OpenTelemetryContextKeys.span, value: span)
     }
