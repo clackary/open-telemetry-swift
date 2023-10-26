@@ -99,11 +99,11 @@ class LinuxActivityContextManager: ContextManager {
 
         guard let contextStack = contextMap[activityIdent] else {
             print("LinuxActivityContextManager.removeContextValue(): context map has no stack bound to identifier \(activityIdent)")
-            return nil
+            return
         }
 
         guard let map = contextStack[key.rawValue] else {
-            return nil
+            return
         }
 
         print("LinuxActivityContextManager.removeContextValue(): removing \(value)")
