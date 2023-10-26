@@ -50,7 +50,6 @@ class LinuxActivityContextManager: ContextManager {
         }
 
         guard let contextStack = contextMap[activityIdent] else {
-            print("LinuxActivityContextManager.getCurrentContextValue(): context map has no stack bound to identifier: \(activityIdent); returning nil")
             return nil
         }
 
@@ -59,7 +58,6 @@ class LinuxActivityContextManager: ContextManager {
         }
 
         guard let item = map.pop() else {
-            print("LinuxActivityContextManager.getCurrentContextValue(): context stack is empty")
             return nil
         }
 
@@ -69,7 +67,7 @@ class LinuxActivityContextManager: ContextManager {
     }
 
     func setCurrentContextValue(forKey key: OpenTelemetryContextKeys, value: AnyObject) {
-        let (activityContext, _) = TaskSupport.instance.getIdentifiers()
+        let (activityIdent, _) = TaskSupport.instance.getIdentifiers()
         
         rlock.lock()
 
@@ -77,10 +75,10 @@ class LinuxActivityContextManager: ContextManager {
             rlock.unlock()
         }
 
-        if contextMap[activityContext] == nil || contextMap[activityContext]?[key.rawValue] != nil {
-            let (activityContext, _) = TaskSupport.instance.createActivityContext()
+        if contextMap[activityIdent] == nil || contextMap[activityIdent]?[key.rawValue] != nil {
+            let (activityIdent, _) = TaskSupport.instance.createActivityContext()
 
-            contextMap[activityContext] = [String: stack]()
+            contextMap[activityIdent] = [String: stack]()
         }
 
         print("LinuxActivityContextManager.setCurrentContextValue(): pushing \(value) onto stack for key: \(activityContext)")
@@ -90,6 +88,9 @@ class LinuxActivityContextManager: ContextManager {
 
     func removeContextValue(forKey key: OpenTelemetryContextKeys, value: AnyObject) {
         let activityIdent = TaskSupport.instance.getCurrentIdentifier()
+
+        print("LinuxActivityContextManager.removeContextValue(): id: \(activityIdent)")
+        print("LinuxActivityContextManager.removeContextValue(): remove: \(value); key: \(key)")
         
         rlock.lock()
 
@@ -98,7 +99,6 @@ class LinuxActivityContextManager: ContextManager {
         }
 
         guard let contextStack = contextMap[activityIdent] else {
-            print("LinuxActivityContextManager.removeContextValue(): context map has no stack bound to identifier \(activityIdent)")
             return
         }
 
@@ -106,8 +106,6 @@ class LinuxActivityContextManager: ContextManager {
             return
         }
 
-        print("LinuxActivityContextManager.removeContextValue(): removing \(value)")
-        
         map.remove(value)
     }
 }
