@@ -98,6 +98,8 @@ class LinuxActivityContextManager: ContextManager {
         }
         
         if let currentValue = contextMap[activityContext]?[key.rawValue], currentValue === value {
+            print("LinuxActivityContextManager.removeContextValue(): forgetting \(value) at key \(activityContext)")
+            
             contextMap[activityContext]?[key.rawValue]?.remove(value)
         }
     }
