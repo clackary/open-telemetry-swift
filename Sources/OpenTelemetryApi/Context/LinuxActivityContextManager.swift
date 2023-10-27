@@ -25,7 +25,7 @@ class stack {
             return nil
         }
             
-        return _stack.removeLast()
+        return _stack.removeLast()  // this is O(1), but there shouldn't be many objects on the stack
     }
 
     func remove(_ item: AnyObject) {
