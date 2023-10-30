@@ -50,15 +50,26 @@ class LinuxActivityContextManager: ContextManager {
             rlock.unlock()
         }
 
+        // This code block makes absolutely no sense to me. Might be related to the use of MacOS activities, which
+        // do not apply to Linux...
+
+        /* 
         if contextMap[activityIdent] == nil || contextMap[activityIdent]?[key.rawValue] != nil {
             let (activityIdent, _) = TaskSupport.instance.createActivityContext()
 
+            contextMap[activityIdent] = [String: AnyObject]()
+        }
+        */
+        
+        if contextMap[activityIdent] == nil {
             contextMap[activityIdent] = [String: AnyObject]()
         }
 
         print("LinuxActivityContextManager.setCurrentContextValue(): remembering \(value) for activityIdent: \(activityIdent)")
 
         contextMap[activityIdent]?[key.rawValue] = value
+
+        print("    contextMap: \(contextMap)")
     }
 
     func removeContextValue(forKey key: OpenTelemetryContextKeys, value: AnyObject) {
