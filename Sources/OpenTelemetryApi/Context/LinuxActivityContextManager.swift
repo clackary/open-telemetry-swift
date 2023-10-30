@@ -36,9 +36,9 @@ class LinuxActivityContextManager: ContextManager {
 
         contextValue = context[key.rawValue]
         
-        print("LinuxActivityContextManager.getCurrentContextValue(): found item: \(contextValue)")
+        print("LinuxActivityContextManager.getCurrentContextValue(): found contextValue: \(contextValue)")
 
-        return item
+        return contextValue
     }
 
     func setCurrentContextValue(forKey key: OpenTelemetryContextKeys, value: AnyObject) {
