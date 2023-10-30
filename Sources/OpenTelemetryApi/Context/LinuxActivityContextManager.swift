@@ -13,35 +13,16 @@ import Foundation
 
 import TaskSupport
 
-class stack {
-    var _stack = [AnyObject]()
-
-    func push(_ item: AnyObject) {
-        _stack.append(item)
-    }
-
-    func pop() -> AnyObject? {
-        if (_stack.isEmpty) {
-            return nil
-        }
-            
-        return _stack.removeLast()  // this is O(1), but there shouldn't be many objects on the stack
-    }
-
-    func remove(_ item: AnyObject) {
-        _stack.removeAll(where: { item === $0 })
-    }
-}
-
 class LinuxActivityContextManager: ContextManager {
     static let instance = LinuxActivityContextManager()
 
     let rlock = NSRecursiveLock()
 
-    var contextMap = [activity_id_t: [String: stack]]()
+    var contextMap = [activity_id_t: [String: AnyObject]]()
 
     func getCurrentContextValue(forKey key: OpenTelemetryContextKeys) -> AnyObject? {
-        let (activityIdent, _) = TaskSupport.instance.getIdentifiers()
+        let (activityIdent, parentIdent) = TaskSupport.instance.getIdentifiers()
+        var contextValue: AnyObject?
 
         rlock.lock()
 
@@ -49,19 +30,13 @@ class LinuxActivityContextManager: ContextManager {
             rlock.unlock()
         }
 
-        guard let contextStack = contextMap[activityIdent] else {
+        guard let context = contextMap[activityIdent] ?? contextMap[parentIdent] else {
             return nil
         }
 
-        guard let map = contextStack[key.rawValue] else {
-            return nil
-        }
-
-        guard let item = map.pop() else {
-            return nil
-        }
-
-        print("LinuxActivityContextManager.getCurrentContextValue(): found item: \(item) on stack.")
+        contextValue = context[key.rawValue]
+        
+        print("LinuxActivityContextManager.getCurrentContextValue(): found item: \(contextValue)")
 
         return item
     }
@@ -78,18 +53,18 @@ class LinuxActivityContextManager: ContextManager {
         if contextMap[activityIdent] == nil || contextMap[activityIdent]?[key.rawValue] != nil {
             let (activityIdent, _) = TaskSupport.instance.createActivityContext()
 
-            contextMap[activityIdent] = [String: stack]()
+            contextMap[activityIdent] = [String: AnyObject]()
         }
 
-        print("LinuxActivityContextManager.setCurrentContextValue(): pushing \(value) onto stack for key: \(activityIdent)")
+        print("LinuxActivityContextManager.setCurrentContextValue(): remembering \(value) for activityIdent: \(activityIdent)")
 
-        contextMap[activityIdent]?[key.rawValue]?.push(value)
+        contextMap[activityIdent]?[key.rawValue] = value
     }
 
     func removeContextValue(forKey key: OpenTelemetryContextKeys, value: AnyObject) {
         let activityIdent = TaskSupport.instance.getCurrentIdentifier()
 
-        print("LinuxActivityContextManager.removeContextValue(): remove: \(value); key: \(key); id: \(activityIdent)")
+        print("LinuxActivityContextManager.removeContextValue(): remove: \(value); key: \(key); id: \(activityIdent):")
         
         rlock.lock()
 
@@ -97,15 +72,14 @@ class LinuxActivityContextManager: ContextManager {
             rlock.unlock()
         }
 
-        guard let contextStack = contextMap[activityIdent] else {
-            return
-        }
+        if let currentValue = contextMap[activityIdent]?[key.rawValue], currentValue === value {
+            contextMap[activityIdent]?[key.rawValue] = nil
 
-        guard let map = contextStack[key.rawValue] else {
-            return
+            if contextMap[activityIdent]?.isEmpty ?? false {
+                print("    \(activityIdent) removed")
+                contextMap[activityIdent] = nil
+            }
         }
-
-        map.remove(value)
     }
 }
 
