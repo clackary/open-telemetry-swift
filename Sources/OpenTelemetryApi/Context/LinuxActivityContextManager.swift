@@ -75,8 +75,9 @@ class LinuxActivityContextManager: ContextManager {
         if let currentValue = contextMap[activityIdent]?[key.rawValue], currentValue === value {
             contextMap[activityIdent]?[key.rawValue] = nil
 
+            print("    \(activityIdent) removed")
+
             if contextMap[activityIdent]?.isEmpty ?? false {
-                print("    \(activityIdent) removed")
                 contextMap[activityIdent] = nil
             }
         }
