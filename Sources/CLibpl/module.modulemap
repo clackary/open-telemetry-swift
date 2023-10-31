@@ -1,0 +1,6 @@
+
+module CLibpl [system] {
+    header "/usr/include/plogic/libpl.h"
+    link "pl"
+    export *
+}
