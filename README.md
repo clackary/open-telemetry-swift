@@ -1,7 +1,7 @@
 
 # Welcome to the opentelemetry-swift for Linux Project #
 
-This project is a fork of the _opentelementry-swift_ (OTEL) reference implmentation that runs only on Apple operating
+This project is a fork of the _opentelemetry-swift_ (OTEL) reference implmentation that runs only on Apple operating
 systems (MacOS, iOS, tvOS, et al.)[^1]. For Linux, this port relies on a small C library that offers support for some
 of the basic features of Apple's _os.activity_ library, upon which the reference Swift library relies heavily.
 
