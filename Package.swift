@@ -38,13 +38,17 @@ let package = Package(
       .package(name: "swift-log", url: "https://github.com/apple/swift-log.git", exact: "1.4.4"),
       .package(name: "swift-metrics", url: "https://github.com/apple/swift-metrics.git", exact: "2.1.1"),
       .package(name: "Reachability.swift", url: "https://github.com/ashleymills/Reachability.swift", exact: "5.1.0"),
-      .package(name: "CLibpl", url: "https://github.com/youngde811/CLibpl.git", from: "0.1.3"),
     ],
     targets: [
+      .systemLibrary(
+        name: "CLibpl",
+        pkgConfig: "libpl",
+        providers: [.apt(["libpl_1.0-1_x86_64.deb"])]
+      ),
       .target(
         name: "TaskSupport",
         dependencies: [
-          .product(name: "CLibpl", package: "CLibpl", condition: .when(platforms: [.linux]))
+          .product(name: "CLibpl", condition: .when(platforms: [.linux]))
         ]
       ),
       .target(name: "OpenTelemetryApi", dependencies: ["TaskSupport"]),
