@@ -33,7 +33,7 @@ let package = Package(
   targets: [
     .systemLibrary(
       name: "CLibpl",
-      providers: [.dpkg("libpl_1.0-1_x86_64.deb")]
+      providers: [.apt("libpl_1.0-1_x86_64.deb")]
     ),
     .target(
       name: "TaskSupport",
