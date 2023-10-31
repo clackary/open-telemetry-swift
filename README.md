@@ -2,9 +2,8 @@
 # Welcome to the opentelemetry-swift for Linux Project #
 
 This project is a fork of the _opentelementry-swift_ (OTEL) reference implmentation that runs only on Apple operating
-systems (MacOS, iOS, watchOS, et al.). Apple Watch? Seriously? Anyhow, for Linux, this port relies on a small C library
-that offers support for some of the basic features of Apple's _os.activity_ library, upon which the reference Swift
-library relies heavily.
+systems (MacOS, iOS, watchOS, et al.)[^1]. For Linux, this port relies on a small C library that offers support for some
+of the basic features of Apple's _os.activity_ library, upon which the reference Swift library relies heavily.
 
 This port has been tested on both Ubuntu 20.04 LTS and 22.04 LTS; ARM64 and AMD64 architectures. In general,
 _opentelemetry-swift-linux_ runs well, and seems to generate proper trace/span data for straightforward cases. What has
@@ -37,3 +36,4 @@ The development team for [_opentelemetry-swift_](https://github.com/open-telemet
 
 [David E. Young](youngde811@pobox.com)
 
+[^1]: Apple Watch? Seriously?
