@@ -31,10 +31,15 @@ let package = Package(
     .package(url: "https://github.com/youngde811/CLibpl.git", from: "0.1.2"),
   ],
   targets: [
+    .systemLibrary(
+      name: "CLibpl",
+      providers: [.dpkg("libpl_1.0-1_x86_64.deb")]
+    ),
     .target(
       name: "TaskSupport",
       dependencies: [
-        .product(name: "CLibpl", package: "CLibpl", condition: .when(platforms: [.linux]))
+        .target(name: "CLibpl", condition: .when(platforms: [.linux]))
+        // .product(name: "CLibpl", package: "CLibpl", condition: .when(platforms: [.linux]))
       ]
     ),
     .target(name: "OpenTelemetryApi", dependencies: ["TaskSupport"]),
