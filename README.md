@@ -36,4 +36,4 @@ The development team for [_opentelemetry-swift_](https://github.com/open-telemet
 
 [David E. Young](youngde811@pobox.com)
 
-[^1]: Apple Watch? Seriously?
+[^1]: watchOS? Seriously?
