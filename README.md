@@ -1,86 +1,32 @@
-# opentelemetry-swift
 
-[![CI](https://github.com/open-telemetry/opentelemetry-swift/actions/workflows/BuildAndTest.yml/badge.svg)](https://github.com/open-telemetry/opentelemetry-swift/actions/workflows/BuildAndTest.yml?query=branch%3Amain+)
-[![codecov](https://codecov.io/gh/open-telemetry/opentelemetry-swift/branch/master/graph/badge.svg)](https://codecov.io/gh/open-telemetry/opentelemetry-swift)
+# Welcome to the opentelemetry-swift for Linux Project #
 
+This project is a fork of the _opentelementry-swift_ (OTEL) reference implmentation that runs only on Apple operating
+systems (MacOS, iOS, watchOS, et al.). For Linux, it relies on a small C library that offers support for some of the
+basic features of Apple's _os.activity_ library, upon which the reference Swift library relies heavily.
 
+This port has been tested on both Ubuntu 20.04 LTS and 22.04 LTS; ARM64 and AMD64 architectures. In general,
+_opentelemetry-swift-linux_ runs well, and seems to generate proper trace/span data for straightforward cases. What has
+not been tested, and what will unlikely work, are complicated nestings of spans. What does "complicated" mean here? I've
+no idea. Since there is no Linux analog to _os.activity_, I had to make an engineering guess as to what Linux currently
+has that might provide OTEL what it needs. That code lives in the Libpl project, and is provided as a C library made
+available in Debian packages.
 
-A swift [OpenTelemetry](https://opentelemetry.io/) client
+## Reference Implementation ##
 
-## Installation
+For extensive documentation on the OTEL reference implementation for Swift, go [here](https://github.com/open-telemetry/opentelemetry-swift).
 
-This package includes several libraries. The `OpenTelemetryApi` library includes protocols and no-op implementations that comprise the OpenTelemetry API following the [specification](https://github.com/open-telemetry/opentelemetry-specification). The `OpenTelemetrySdk` library is the reference implementation of the API.
+## References ##
 
-Libraries that produce telemetry data should only depend on `OpenTelemetryApi`, and defer the choice of the SDK to the application developer. Applications may depend on `OpenTelemetrySdk` or another package that implements the API.
+- The [Libpl](https://github.com/youngde811/libpl) project.
+- The [CLibpl](https://github.com/youngde811/CLibpl) project, which provides the ability to include the _libpl_ C
+  library in Swift projects.
 
+## Original Authors ##
 
-#### Adding the dependency
+The development team for [_opentelemetry-swift_](https://github.com/open-telemetry/opentelemetry-swift).
 
-opentelemetry-swift is designed for Swift 5. To depend on the  opentelemetry-swift package, you need to declare your dependency in your `Package.swift`:
+## Port Author ##
 
-```
-.package(url: "https://github.com/open-telemetry/opentelemetry-swift", from: "1.0.0"),
-```
+[David E. Young](youngde811@pobox.com)
 
-and to your application/library target, add `OpenTelemetryApi` or  `OpenTelemetrySdk`to your `dependencies`, e.g. like this:
-
-```
-.target(name: "ExampleTelemetryProducerApp", dependencies: ["OpenTelemetryApi"]),
-```
-
-or 
-
-```
-.target(name: "ExampleApp", dependencies: ["OpenTelemetrySdk"]),
-```
-
-## Documentation
-
-Official documentation for the library can be found in the official opentelemetry [documentation  page](https://opentelemetry.io/docs/instrumentation/swift/), including:
-
- * Documentation about installation and [manual instrumentation](https://opentelemetry.io/docs/instrumentation/swift/manual/)
-   
-* [Libraries](https://opentelemetry.io/docs/instrumentation/swift/libraries/) that provide automatic instrumentation
-
-## Current status
-
-### API and SDK
-
-Tracing and Baggage are considered stable
-
-Logs are considered beta quality
-
-Metrics is implemented using an outdated spec, is fully functional but will change in the future
-
-### Supported exporters and importers
-
-#### Traces
-* Exporters: Stdout, Jaeger, Zipkin, Datadog and OpenTelemetry (OTLP) collector
-* Importers: OpenTracingShim
-
-#### Metrics 
-* Exporters: Prometheus, Datadog, and OpenTelemetry (OTLP) collector
-* Importers: SwiftMetricsShim
-
-#### Logs 
-* Exporters: OpenTelemetry (OTLP) collector
-
-> **_NOTE:_** OTLP exporters are supported both in GRPC and HTTP, only GRPC is production ready, HTTP is still experimental
-
-### Instrumentation libraries
-* URLSession
-* NetworkStatus
-* SDKResourceExtension
-* SignPostIntegration
-
-
-## Examples
-
-The package includes some example projects with basic functionality:
-
-- `Datadog Sample` -  Shows the Datadog exporter used with a Simple Exporter, showing how to configure for sending.
-- `Logging Tracer` -  Simple api implementation of a Tracer that logs every api call
-- `Network Tracer` -  Shows how to use the `URLSessionInstrumentation` instrumentation in your application 
-- `Simple Exporter` - Shows the Jaeger an Stdout exporters in action using a MultiSpanExporter. Can be easily modified for other exporters
-- `Prometheus Sample` - Shows the Prometheus exporter reporting metrics to a Prometheus instance
-- `OTLP Exporter` - Shows the OTLP exporter reporting traces to Zipkin and metrics to a Prometheus via the otel-collector
