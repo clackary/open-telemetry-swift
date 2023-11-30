@@ -8,6 +8,7 @@ import Foundation
 /// This class provides a static global accessor for telemetry objects Tracer, Meter
 ///  and BaggageManager.
 ///  The telemetry objects are lazy-loaded singletons resolved via ServiceLoader mechanism.
+
 public struct OpenTelemetry {
     
     public static var version = "v1.20.0"
@@ -42,7 +43,7 @@ public struct OpenTelemetry {
         baggageManager = DefaultBaggageManager.instance
 
         #if os(Linux)
-        contextProvider = OpenTelemetryContextProvider(contextManager: LinuxActivityContextManager.instance)
+        contextProvider = OpenTelemetryContextProvider(contextManager: NoOpActivityContextManager.instance)
         #else
         contextProvider = OpenTelemetryContextProvider(contextManager: ActivityContextManager.instance)
         #endif
