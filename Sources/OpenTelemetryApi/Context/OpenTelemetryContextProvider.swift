@@ -28,6 +28,7 @@ public struct OpenTelemetryContextProvider {
     /// Sets the span as the activeSpan for the current context
     /// - Parameter span: the Span to be set to the current context
     public func setActiveSpan(_ span: Span) {
+        print("setActiveSpan(): task hash value: \(Task.hashValue)")
         contextManager.setCurrentContextValue(forKey: OpenTelemetryContextKeys.span, value: span)
     }
 
