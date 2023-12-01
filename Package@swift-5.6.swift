@@ -40,16 +40,9 @@ let package = Package(
       .package(url: "https://github.com/ashleymills/Reachability.swift", exact: "5.1.0"),
     ],
     targets: [
-      .systemLibrary(
-        name: "CLibpl",
-        pkgConfig: "libpl",
-        providers: [.apt(["libpl_1.0-1_x86_64.deb"])]
-      ),
       .target(
         name: "TaskSupport",
-        dependencies: [
-          .target(name: "CLibpl", condition: .when(platforms: [.linux]))
-        ]
+        dependencies: []
       ),
       .target(name: "OpenTelemetryApi", dependencies: ["TaskSupport"]),
       .target(name: "OpenTelemetrySdk",

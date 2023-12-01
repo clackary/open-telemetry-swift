@@ -1,6 +1,0 @@
-
-module CLibpl [system] {
-    umbrella header "libpl_umbrella.h"
-    link "pl"
-    export *
-}
