@@ -42,6 +42,8 @@ public struct OpenTelemetry {
         loggerProvider = DefaultLoggerProvider.instance
         baggageManager = DefaultBaggageManager.instance
 
+        // select the context manager
+        
         #if os(Linux)
         contextProvider = OpenTelemetryContextProvider(contextManager: LinuxActivityContextManager.instance)
         #else
