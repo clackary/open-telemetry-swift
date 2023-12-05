@@ -13,14 +13,14 @@ import Foundation
 
 import TaskSupport
 
-struct ContextStack {
+class ContextStack {
     var _stack: [AnyObject] = []
 
-    mutating func push(_ item: AnyObject) {
+    func push(_ item: AnyObject) {
         _stack.append(item)
     }
 
-    mutating func pop() -> AnyObject? {
+    func pop() -> AnyObject? {
         guard let span = _stack.removeLast() else {
             return nil
         }
@@ -28,7 +28,7 @@ struct ContextStack {
         return span
     }
 
-    mutating func remove(_ item: AnyObject) {
+    func remove(_ item: AnyObject) {
         _stack.removeAll(where: { item === $0 })
     }
 
