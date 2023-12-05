@@ -103,12 +103,12 @@ class LinuxActivityContextManager: ContextManager {
             rlock.unlock()
         }
 
-        guard map = contextMap[threadId] else {
+        guard stack = contextMap[threadId] else {
             print("LinuxActivityContextManager.\(#function): no stack for: \(threadId)")
             return
         }
 
-        map.remove(value)
+        stack.remove(value)
     }
 }
 
