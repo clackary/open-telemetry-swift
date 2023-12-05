@@ -83,7 +83,7 @@ class LinuxActivityContextManager: ContextManager {
 
         print("LinuxActivityContextManager.\(#function): remembering span: \(value) for: \(threadId)")
 
-        contextMap[threadId].push(value)
+        contextMap[threadId]?.push(value)
 
         print("LinuxActivityContextManager.\(#function): \(contextMap)")
     }
