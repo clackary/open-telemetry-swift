@@ -22,7 +22,7 @@ public typealias activity_scope_state_s = UInt  // this is an opaque structure o
 #endif
 
 public class TaskSupport {
-    #if os(iOS) || os(macOS) || os(tvOS)    
+    #if os(iOS) || os(macOS) || os(tvOS)
     static public let instance = AppleTaskSupport()
     #else
     static public let instance = LinuxTaskSupport()

@@ -24,6 +24,10 @@ public struct OpenTelemetryContextProvider {
     /// Returns the Baggage from the current context
 
     public var activeBaggage: Baggage? {
+        #if os(Linux)
+        unsupported(function: #function)
+        #endif
+        
         return contextManager.getCurrentContextValue(forKey: OpenTelemetryContextKeys.baggage) as? Baggage
     }
 
@@ -38,6 +42,9 @@ public struct OpenTelemetryContextProvider {
     /// - Parameter baggage: the Correlation Context to be set to the current contex
 
     public func setActiveBaggage(_ baggage: Baggage) {
+        #if os(Linux)
+        unsupported(function: #function)
+        #endif
         contextManager.setCurrentContextValue(forKey: OpenTelemetryContextKeys.baggage, value: baggage)
     }
 
@@ -46,6 +53,16 @@ public struct OpenTelemetryContextProvider {
     }
 
     public func removeContextForBaggage(_ baggage: Baggage) {
+        #if os(Linux)
+        unsupported(function: #function)
+        #endif
+        
         contextManager.removeContextValue(forKey: OpenTelemetryContextKeys.baggage, value: baggage)
+    }
+
+    func unsupported(function: String) {
+        print("OpenTelementryContextProvider.\(function): Only Spans are supported at this time!")
+
+        abort()
     }
 }
