@@ -21,11 +21,7 @@ class ContextStack {
     }
 
     func pop() -> AnyObject? {
-        guard let span = _stack.removeLast() else {
-            return nil
-        }
-        
-        return span
+        return _stack.removeLast()
     }
 
     func remove(_ item: AnyObject) {
@@ -103,7 +99,7 @@ class LinuxActivityContextManager: ContextManager {
             rlock.unlock()
         }
 
-        guard stack = contextMap[threadId] else {
+        guard let stack = contextMap[threadId] else {
             print("LinuxActivityContextManager.\(#function): no stack for: \(threadId)")
             return
         }
