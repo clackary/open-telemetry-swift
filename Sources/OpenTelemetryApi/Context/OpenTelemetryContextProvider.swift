@@ -45,6 +45,7 @@ public struct OpenTelemetryContextProvider {
         #if os(Linux)
         unsupported(function: #function)
         #endif
+        
         contextManager.setCurrentContextValue(forKey: OpenTelemetryContextKeys.baggage, value: baggage)
     }
 
