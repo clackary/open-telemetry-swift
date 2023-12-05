@@ -13,16 +13,43 @@ import Foundation
 
 import TaskSupport
 
+struct ContextStack {
+    var _stack: [Span] = []
+
+    mutating func push(_ item: Span) {
+        _stack.append(item)
+    }
+
+    mutating func pop() -> Span? {
+        guard let span = _stack.removeLast() else {
+            return nil
+        }
+        
+        return span
+    }
+
+    mutating func remove(_ item: Span) {
+        _stack.removeAll(where: { item === $0 })
+    }
+
+    func last() -> Span? {
+        guard let span = _stack.last else {
+            return nil
+        }
+
+        return span
+    }
+}
+
 class LinuxActivityContextManager: ContextManager {
     static let instance = LinuxActivityContextManager()
 
     let rlock = NSRecursiveLock()
 
-    var contextMap = [activity_id_t: [String: AnyObject]]()
+    var contextMap = [activity_id_t: ContextStack]()
 
     func getCurrentContextValue(forKey key: OpenTelemetryContextKeys) -> AnyObject? {
-        let (activityIdent, parentIdent) = TaskSupport.instance.getIdentifiers()
-        var contextValue: AnyObject?
+        let threadId = TaskSupport.instance.getCurrentIdentifier()
 
         rlock.lock()
 
@@ -30,19 +57,23 @@ class LinuxActivityContextManager: ContextManager {
             rlock.unlock()
         }
 
-        guard let context = contextMap[activityIdent] ?? contextMap[parentIdent] else {
+        guard var stack = contextMap[threadId] else {
+            print("LinuxActivityContextManager.\(#function): no stack yet for: \(threadId)")
             return nil
         }
 
-        contextValue = context[key.rawValue]
-        
-        print("LinuxActivityContextManager.getCurrentContextValue(): found contextValue: \(contextValue)")
+        guard var item = stack.last() else {
+            print("LinuxActivityContextManager.\(#function): context stack is empty")
+            return nil
+        }
 
-        return contextValue
+        print("LinuxActivityContextManager.\(#function): found item: \(item).")
+
+        return item
     }
 
     func setCurrentContextValue(forKey key: OpenTelemetryContextKeys, value: AnyObject) {
-        let (activityIdent, _) = TaskSupport.instance.getIdentifiers()
+        let threadId = TaskSupport.instance.getCurrentIdentifier()
         
         rlock.lock()
 
@@ -50,32 +81,21 @@ class LinuxActivityContextManager: ContextManager {
             rlock.unlock()
         }
 
-        // This code block makes absolutely no sense to me. Might be related to the use of MacOS activities, which
-        // do not apply to Linux...
-
-        /* 
-        if contextMap[activityIdent] == nil || contextMap[activityIdent]?[key.rawValue] != nil {
-            let (activityIdent, _) = TaskSupport.instance.createActivityContext()
-
-            contextMap[activityIdent] = [String: AnyObject]()
-        }
-        */
-        
-        if contextMap[activityIdent] == nil {
-            contextMap[activityIdent] = [String: AnyObject]()
+        if contextMap[threadId] == nil {
+            contextMap[threadId] = ContextStack()
         }
 
-        print("LinuxActivityContextManager.setCurrentContextValue(): remembering \(value) for activityIdent: \(activityIdent)")
+        print("LinuxActivityContextManager.\(#function): remembering span: \(value) for: \(threadId)")
 
-        contextMap[activityIdent]?[key.rawValue] = value
+        contextMap[threadId].push(value)
 
-        print("    contextMap: \(contextMap)")
+        print("LinuxActivityContextManager.\(#function): \(contextMap)")
     }
 
     func removeContextValue(forKey key: OpenTelemetryContextKeys, value: AnyObject) {
-        let activityIdent = TaskSupport.instance.getCurrentIdentifier()
+        let threadId = TaskSupport.instance.getCurrentIdentifier()
 
-        print("LinuxActivityContextManager.removeContextValue(): remove: \(value); key: \(key); id: \(activityIdent):")
+        print("LinuxActivityContextManager.\(#function): remove: \(value); id: \(threadId):")
         
         rlock.lock()
 
@@ -83,15 +103,12 @@ class LinuxActivityContextManager: ContextManager {
             rlock.unlock()
         }
 
-        if let currentValue = contextMap[activityIdent]?[key.rawValue], currentValue === value {
-            contextMap[activityIdent]?[key.rawValue] = nil
-
-            print("    \(activityIdent) removed")
-
-            if contextMap[activityIdent]?.isEmpty ?? false {
-                contextMap[activityIdent] = nil
-            }
+        guard map = contextMap[threadId] else {
+            print("LinuxActivityContextManager.\(#function): no stack for: \(threadId)")
+            return
         }
+
+        map.remove(value)
     }
 }
 

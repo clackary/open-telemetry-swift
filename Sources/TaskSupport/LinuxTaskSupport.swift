@@ -10,13 +10,21 @@
 
 import Foundation
 
+import Clibpl
+
 public class LinuxTaskSupport {
     public func getIdentifiers() -> (activity_id_t, parent_activity_id_t) {
-        return (0, 0)
+        let threadId = getCurrentIdentifier()
+        
+        return (threadId, 0)  // parent ids on Linux are meaningless, and unavailable
     }
 
-    public func getCurrentIdentifier() -> activity_id_t {
-        return 0
+    public func getCurrentIdentifier() -> thread_id_t {
+        var threadId: thread_id_t = 0
+
+        pl_get_thread_id(&threadId)
+        
+        return threadId
     }
 
     public func createActivityContext() -> (activity_id_t, ScopeElement) {
