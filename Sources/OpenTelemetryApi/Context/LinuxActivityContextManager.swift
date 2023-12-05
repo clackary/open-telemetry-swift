@@ -3,9 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-// This class implements the Linux behavior required to employ activity contexts as offered by Apple's
-// os_activity library. There is not a one-to-one mapping between the platform libraries employed;
-// we do the best we can for Linux.
+// This class implements the Linux behavior required to emulate, to a degree, that which is found
+// in Apple's os.activity library. However, whatever has been done here is only a well-researched guess;
+// Linux offers nothing comparable, os.activity has very minimal documentation, and nowhere is there
+// a decent description of what that library actually does (much less source code). In fact, the advice
+// I received on Stack Overflow was to empoy a no-op class for activity's behavior. Meaning the opentelemetry-swift
+// library would be useless on Linux. No doubt I'll be back in here soon to find a better approach.
 
 #if os(Linux)
 
