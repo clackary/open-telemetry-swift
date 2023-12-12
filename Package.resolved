@@ -118,6 +118,15 @@
       }
     },
     {
+      "identity" : "swift-service-context",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-service-context.git",
+      "state" : {
+        "revision" : "ce0141c8f123132dbd02fd45fea448018762df1b",
+        "version" : "1.0.0"
+      }
+    },
+    {
       "identity" : "thrift-swift",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/undefinedlabs/Thrift-Swift",

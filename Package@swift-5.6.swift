@@ -38,6 +38,7 @@ let package = Package(
       .package(url: "https://github.com/apple/swift-log.git", from: "1.4.4"),
       .package(url: "https://github.com/apple/swift-metrics.git", from: "2.1.1"),
       .package(url: "https://github.com/ashleymills/Reachability.swift", exact: "5.1.0"),
+      .package(url: "https://github.com/apple/swift-service-context.git", from: "1.0.0"),
     ],
     targets: [
       .systemLibrary(
@@ -48,7 +49,11 @@ let package = Package(
         name: "TaskSupport",
         dependencies: ["Clibpl"]
       ),
-      .target(name: "OpenTelemetryApi", dependencies: ["TaskSupport"]),
+      .target(name: "OpenTelemetryApi",
+              dependencies: [
+                "OpenTelemetryApi",
+                .product(name: "ServiceContextModule", package: "swift-service-context")
+              ]),
       .target(name: "OpenTelemetrySdk",
               dependencies: ["OpenTelemetryApi"]),
       .target(name: "ResourceExtension",
