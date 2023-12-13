@@ -35,7 +35,11 @@ public struct OpenTelemetryContextProvider {
     /// - Parameter span: the Span to be set to the current context
 
     public func setActiveSpan(_ span: Span) {
+        #if os(Linux)
+        contextManager.setCurrentSpan(span: span)
+        #else
         contextManager.setCurrentContextValue(forKey: OpenTelemetryContextKeys.span, value: span)
+        #endif
     }
 
     /// Sets the span as the activeSpan for the current context

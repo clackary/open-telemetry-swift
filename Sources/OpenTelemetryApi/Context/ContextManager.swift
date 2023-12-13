@@ -10,3 +10,9 @@ public protocol ContextManager: AnyObject {
     func setCurrentContextValue(forKey: OpenTelemetryContextKeys, value: AnyObject)
     func removeContextValue(forKey: OpenTelemetryContextKeys, value: AnyObject)
 }
+
+#if os(Linux)
+extension ContextManager {
+    func setCurrentSpan(span: Span)
+}
+#endif

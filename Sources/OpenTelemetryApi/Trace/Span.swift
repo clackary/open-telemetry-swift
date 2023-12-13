@@ -141,3 +141,15 @@ public extension Span {
         status = newStatus
     }
 }
+
+#if os(Linux)
+public extension Span {
+    func getParentContext() -> SpanContext {
+        return nil
+    }
+
+    func getContext() -> SpanContext {
+        return nil
+    }
+}
+#endif

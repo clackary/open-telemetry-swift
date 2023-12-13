@@ -47,6 +47,10 @@ class LinuxActivityContextManager: ContextManager {
 
     var contextMap = [activity_id_t: ContextStack]()
 
+    func setCurrentSpan(span: Span) {
+
+    }
+
     func getCurrentContextValue(forKey key: OpenTelemetryContextKeys) -> AnyObject? {
         let threadId = TaskSupport.instance.getCurrentIdentifier()
 
