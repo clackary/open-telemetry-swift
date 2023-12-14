@@ -13,6 +13,15 @@ public enum OpenTelemetryContextKeys: String {
 }
 
 public struct OpenTelemetryContextProvider {
+    #if os(Linux)
+    @TaskLocal public static var activeSpan: Span?
+
+    @_unsafeInheritExecutor // same as withValue declared in the stdlib; because we do not want to hop off the executor at all
+    public static func withValue<T>(_ value: Span?, operation: () async throws -> T) async rethrows -> T {
+        try await OpenTelemetryContextProvider.$activeSpan.withValue(value, operation: operation)
+    }
+    #endif
+
     var contextManager: ContextManager
 
     /// Returns the Span from the current context
@@ -24,10 +33,6 @@ public struct OpenTelemetryContextProvider {
     /// Returns the Baggage from the current context
 
     public var activeBaggage: Baggage? {
-        #if os(Linux)
-        unsupported(function: #function)
-        #endif
-        
         return contextManager.getCurrentContextValue(forKey: OpenTelemetryContextKeys.baggage) as? Baggage
     }
 
@@ -35,21 +40,13 @@ public struct OpenTelemetryContextProvider {
     /// - Parameter span: the Span to be set to the current context
 
     public func setActiveSpan(_ span: Span) {
-        #if os(Linux)
-        contextManager.setCurrentSpan(span: span)
-        #else
         contextManager.setCurrentContextValue(forKey: OpenTelemetryContextKeys.span, value: span)
-        #endif
     }
 
     /// Sets the span as the activeSpan for the current context
     /// - Parameter baggage: the Correlation Context to be set to the current contex
 
     public func setActiveBaggage(_ baggage: Baggage) {
-        #if os(Linux)
-        unsupported(function: #function)
-        #endif
-        
         contextManager.setCurrentContextValue(forKey: OpenTelemetryContextKeys.baggage, value: baggage)
     }
 
@@ -58,16 +55,6 @@ public struct OpenTelemetryContextProvider {
     }
 
     public func removeContextForBaggage(_ baggage: Baggage) {
-        #if os(Linux)
-        unsupported(function: #function)
-        #endif
-        
         contextManager.removeContextValue(forKey: OpenTelemetryContextKeys.baggage, value: baggage)
-    }
-
-    func unsupported(function: String) {
-        print("OpenTelementryContextProvider.\(function): Only Spans are supported at this time!")
-
-        abort()
     }
 }
