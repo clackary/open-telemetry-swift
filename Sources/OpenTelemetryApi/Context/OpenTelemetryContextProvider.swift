@@ -16,7 +16,7 @@ public struct OpenTelemetryContextProvider {
     #if os(Linux)
     @TaskLocal public static var activeSpan: Span?
 
-    @_unsafeInheritExecutor // same as withValue declared in the stdlib; because we do not want to hop off the executor at all
+    @_unsafeInheritExecutor
     public static func withValue<T>(_ value: Span?, operation: () async throws -> T) async rethrows -> T {
         try await OpenTelemetryContextProvider.$activeSpan.withValue(value, operation: operation)
     }
