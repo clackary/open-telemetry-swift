@@ -45,7 +45,7 @@ public struct OpenTelemetry {
         // select the context manager
         
         #if os(Linux)
-        contextProvider = OpenTelemetryContextProvider(contextManager: LinuxActivityContextManager.instance)
+        contextProvider = OpenTelemetryContextProvider()
         #else
         contextProvider = OpenTelemetryContextProvider(contextManager: ActivityContextManager.instance)
         #endif

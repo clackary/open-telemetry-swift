@@ -20,8 +20,23 @@ public struct OpenTelemetryContextProvider {
     public static func withValue<T>(_ value: Span?, operation: () async throws -> T) async rethrows -> T {
         try await OpenTelemetryContextProvider.$activeSpan.withValue(value, operation: operation)
     }
-    #endif
 
+    public func setActiveSpan(_ span: Span) {
+
+    }
+
+    public func setActiveBaggage(_ baggage: Baggage) {
+
+    }
+
+    public func removeContextForSpan(_ span: Span) {
+
+    }
+
+    public func removeContextForBaggage(_ baggage: Baggage) {
+
+    }
+    #else
     var contextManager: ContextManager
 
     /// Returns the Span from the current context
@@ -57,4 +72,5 @@ public struct OpenTelemetryContextProvider {
     public func removeContextForBaggage(_ baggage: Baggage) {
         contextManager.removeContextValue(forKey: OpenTelemetryContextKeys.baggage, value: baggage)
     }
+    #endif
 }
