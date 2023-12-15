@@ -6,6 +6,7 @@
 import Foundation
 
 /// No-op implementation of the SpanBuilder
+
 class PropagatedSpanBuilder: SpanBuilder {
     private var tracer: Tracer
     private var isRootSpan: Bool = false
@@ -18,9 +19,18 @@ class PropagatedSpanBuilder: SpanBuilder {
     }
 
     @discardableResult public func startSpan() -> Span {
+        #if os(Linux)
+        if spanContext == nil, !isRootSpan {
+            spanContext = nil
+        }
+        #else
+        let currentSpan = OpenTelemetry.instance.contextProvider.activeSpan
+        
         if spanContext == nil, !isRootSpan {
             spanContext = OpenTelemetry.instance.contextProvider.activeSpan?.context
         }
+        #endif
+        
         return PropagatedSpan(name: spanName,
                               context: spanContext ?? SpanContext.create(traceId: TraceId.random(),
                                                                          spanId: SpanId.random(),

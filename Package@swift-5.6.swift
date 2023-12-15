@@ -41,13 +41,9 @@ let package = Package(
       .package(url: "https://github.com/apple/swift-service-context.git", from: "1.0.0"),
     ],
     targets: [
-      .systemLibrary(
-        name: "Clibpl",
-        path: "./Sources/Clibpl"
-      ),
       .target(
         name: "TaskSupport",
-        dependencies: ["Clibpl"]
+        dependencies: []
       ),
       .target(name: "OpenTelemetryApi",
               dependencies: [

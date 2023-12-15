@@ -76,6 +76,8 @@ public struct OpenTelemetry {
     }
 
     public static func registerContextManager(contextManager: ContextManager) {
+        #if os(iOS)
         instance.contextProvider.contextManager = contextManager
+        #endif
     }
 }

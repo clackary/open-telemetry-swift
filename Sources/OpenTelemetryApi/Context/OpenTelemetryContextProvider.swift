@@ -14,6 +14,8 @@ public enum OpenTelemetryContextKeys: String {
 
 public struct OpenTelemetryContextProvider {
     #if os(Linux)
+    public var activeBaggage: Baggage?
+    
     @TaskLocal public static var activeSpan: Span?
 
     @_unsafeInheritExecutor
@@ -22,19 +24,19 @@ public struct OpenTelemetryContextProvider {
     }
 
     public func setActiveSpan(_ span: Span) {
-
+        // no-op
     }
 
     public func setActiveBaggage(_ baggage: Baggage) {
-
+        // no-op
     }
 
     public func removeContextForSpan(_ span: Span) {
-
+        // no-op
     }
 
     public func removeContextForBaggage(_ baggage: Baggage) {
-
+        // no-op
     }
     #else
     var contextManager: ContextManager
