@@ -188,11 +188,7 @@ class SpanBuilderSdk: SpanBuilder {
     private static func getParentSpan(parentType: ParentType, explicitParent: Span?) -> Span? {
         switch parentType {
         case .currentSpan:
-            #if os(Linux)
-            return OpenTelemetry.activeSpan
-            #else
-            return OpenTelemetry.instance.contextProvider.activeSpan
-            #endif
+            return OpenTelemetry.getActiveSpan()
         case .explicitParent:
             return explicitParent
         default:
