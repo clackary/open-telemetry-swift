@@ -167,25 +167,10 @@ class SpanBuilderSdk: SpanBuilder {
     }
 
     private func getParentContext(parentType: ParentType, explicitParent: Span?, remoteParent: SpanContext?) -> SpanContext? {
-        #if os(Linux)
-        let currentSpan = OpenTelemetry.activeSpan
-        
-        if spanContext == nil, !isRootSpan {
-            spanContext = currentSpan.context
-        }
-        #else
-        let currentSpan = OpenTelemetry.instance.contextProvider.activeSpan
-
-        if spanContext == nil, !isRootSpan {
-            spanContext = OpenTelemetry.instance.contextProvider.activeSpan?.context
-        }
-        #endif
-
-        if spanContext == nil, !isRootSpan {
-            spanContext = OpenTelemetry.instance.contextProvider.activeSpan?.context
-        }
+        let currentSpan = OpenTelemetry.getActiveSpan()
 
         var parentContext: SpanContext?
+        
         switch parentType {
         case .noParent:
             parentContext = nil
@@ -203,7 +188,7 @@ class SpanBuilderSdk: SpanBuilder {
     private static func getParentSpan(parentType: ParentType, explicitParent: Span?) -> Span? {
         switch parentType {
         case .currentSpan:
-            #if osLinux
+            #if os(Linux)
             return OpenTelemetry.activeSpan
             #else
             return OpenTelemetry.instance.contextProvider.activeSpan

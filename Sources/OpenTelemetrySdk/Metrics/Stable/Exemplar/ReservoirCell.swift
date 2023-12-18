@@ -30,15 +30,7 @@ public class ReservoirCell {
     }
 
     private func getActiveSpan() -> SpanContext? {
-        var context: SpanContext? = nil
-        
-        #if os(Linux)
-        context = OpenTelemetry.activeSpan?.context
-        #else
-        context = OpenTelemetry.instance.contextProvider.activeSpan?.context
-        #endif
-
-        return context
+        return OpenTelemetry.getActiveSpan()?.context
     }
 
     private func offerMeasurement(attributes: [String: AttributeValue]) {

@@ -10,7 +10,6 @@ import Foundation
 ///  The telemetry objects are lazy-loaded singletons resolved via ServiceLoader mechanism.
 
 public struct OpenTelemetry {
-    
     public static var version = "v1.20.0"
     
     public static var instance = OpenTelemetry()
@@ -82,6 +81,14 @@ public struct OpenTelemetry {
     }
 }
 
+#if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
+public extension OpenTelemetry {
+    public static func getActiveSpan() -> Span? {
+        return OpenTelemetry.instance.contextProvider.activeSpan
+    }
+}
+#endif
+    
 #if os(Linux)
 public extension OpenTelemetry {
     @TaskLocal public static var activeSpan: Span?
@@ -89,6 +96,10 @@ public extension OpenTelemetry {
     @_unsafeInheritExecutor
     public static func withValue<T>(_ value: Span?, operation: () async throws -> T) async rethrows -> T {
         try await OpenTelemetry.$activeSpan.withValue(value, operation: operation)
+    }
+
+    public static func getActiveSpan() -> Span? {
+        return activeSpan
     }
 }
 #endif
