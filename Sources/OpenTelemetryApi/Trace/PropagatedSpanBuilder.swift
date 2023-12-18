@@ -18,7 +18,8 @@ class PropagatedSpanBuilder: SpanBuilder {
         self.spanName = spanName
     }
 
-    @discardableResult public func startSpan() -> Span {
+    @discardableResult
+    public func startSpan() -> Span {
         #if os(Linux)
         if spanContext == nil, !isRootSpan {
             spanContext = nil

@@ -77,6 +77,10 @@ public struct OpenTelemetry {
 
 #if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
 public extension OpenTelemetry {
+    @TaskLocal
+    @available(macOS 10.15, *)
+    static var activeSpan: Span? = nil
+    
     static func registerContextManager(contextManager: ContextManager) {
         instance.contextProvider.contextManager = contextManager
     }
