@@ -79,7 +79,7 @@ public struct OpenTelemetry {
 public extension OpenTelemetry {
     @TaskLocal
     @available(macOS 10.15, *)
-    static var activeSpan: Span? = nil
+    static var nilActiveSpan: Span? = nil
     
     static func registerContextManager(contextManager: ContextManager) {
         instance.contextProvider.contextManager = contextManager
