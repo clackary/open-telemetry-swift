@@ -19,15 +19,13 @@ class PropagatedSpanBuilder: SpanBuilder {
     }
 
     @discardableResult public func startSpan() -> Span {
-        let currentSpan = OpenTelemetry.getActiveSpan()
-        
         #if os(Linux)
         if spanContext == nil, !isRootSpan {
             spanContext = nil
         }
         #else
         if spanContext == nil, !isRootSpan {
-            spanContext = OpenTelemetry.instance.contextProvider.activeSpan?.context
+            spanContext = OpenTelemetry.getActiveSpan().context
         }
         #endif
         

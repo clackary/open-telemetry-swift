@@ -13,6 +13,22 @@ public struct OpenTelemetry {
     public static var version = "v1.20.0"
     
     public static var instance = OpenTelemetry()
+    
+    init() {
+        stableMeterProvider = nil
+        tracerProvider = DefaultTracerProvider.instance
+        meterProvider = DefaultMeterProvider.instance
+        loggerProvider = DefaultLoggerProvider.instance
+        baggageManager = DefaultBaggageManager.instance
+
+        // select the context manager
+        
+        #if os(Linux)
+        contextProvider = OpenTelemetryContextProvider()
+        #else
+        contextProvider = OpenTelemetryContextProvider(contextManager: ActivityContextManager.instance)
+        #endif
+    }
 
     /// Registered tracerProvider or default via DefaultTracerProvider.instance.
     public private(set) var tracerProvider: TracerProvider
@@ -33,22 +49,6 @@ public struct OpenTelemetry {
 
     /// registered manager or default via  DefaultBaggageManager.instance.
     public private(set) var contextProvider: OpenTelemetryContextProvider
-
-    private init() {
-        stableMeterProvider = nil
-        tracerProvider = DefaultTracerProvider.instance
-        meterProvider = DefaultMeterProvider.instance
-        loggerProvider = DefaultLoggerProvider.instance
-        baggageManager = DefaultBaggageManager.instance
-
-        // select the context manager
-        
-        #if os(Linux)
-        contextProvider = OpenTelemetryContextProvider()
-        #else
-        contextProvider = OpenTelemetryContextProvider(contextManager: ActivityContextManager.instance)
-        #endif
-    }
 
     public static func registerStableMeterProvider(meterProvider: StableMeterProvider) {
         instance.stableMeterProvider = meterProvider
@@ -73,17 +73,15 @@ public struct OpenTelemetry {
     public static func registerPropagators(textPropagators: [TextMapPropagator], baggagePropagator: TextMapBaggagePropagator) {
         instance.propagators = DefaultContextPropagators(textPropagators: textPropagators, baggagePropagator: baggagePropagator)
     }
-
-    public static func registerContextManager(contextManager: ContextManager) {
-        #if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
-        instance.contextProvider.contextManager = contextManager
-        #endif
-    }
 }
 
 #if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
 public extension OpenTelemetry {
-    public static func getActiveSpan() -> Span? {
+    static func registerContextManager(contextManager: ContextManager) {
+        instance.contextProvider.contextManager = contextManager
+    }
+
+    static func getActiveSpan() -> Span? {
         return OpenTelemetry.instance.contextProvider.activeSpan
     }
 }
@@ -91,14 +89,22 @@ public extension OpenTelemetry {
     
 #if os(Linux)
 public extension OpenTelemetry {
-    @TaskLocal public static var activeSpan: Span?
+    static var serviceName: String = "opentelemetry.tracing"
+    static var serviceVersion: String = "1.0"
+
+    static var collectorHost = "localhost"
+    static var collectorPort = 4317
+    static var enabled = false
+    static var useDebug = false
+
+    @TaskLocal static var activeSpan: Span?
 
     @_unsafeInheritExecutor
-    public static func withValue<T>(_ value: Span?, operation: () async throws -> T) async rethrows -> T {
+    static func withValue<T>(_ value: Span?, operation: () async throws -> T) async rethrows -> T {
         try await OpenTelemetry.$activeSpan.withValue(value, operation: operation)
     }
 
-    public static func getActiveSpan() -> Span? {
+    static func getActiveSpan() -> Span? {
         return activeSpan
     }
 }
