@@ -82,14 +82,15 @@ public extension OpenTelemetry {
     }
 
     static func getActiveSpan() -> Span? {
-        return OpenTelemetry.instance.contextProvider.activeSpan
+        return instance.contextProvider.activeSpan
     }
 }
 #endif
     
 #if os(Linux)
 public extension OpenTelemetry {
-    @TaskLocal static var activeSpan: Span? = nil
+    @TaskLocal
+    static var activeSpan: Span? = nil
     
     @_unsafeInheritExecutor
     static func withValue<T>(_ value: Span?, operation: () async throws -> T) async rethrows -> T {
