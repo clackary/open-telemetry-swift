@@ -16,13 +16,6 @@ public struct OpenTelemetryContextProvider {
     #if os(Linux)
     public var activeBaggage: Baggage?
     
-    @TaskLocal public static var activeSpan: Span?
-
-    @_unsafeInheritExecutor
-    public static func withValue<T>(_ value: Span?, operation: () async throws -> T) async rethrows -> T {
-        try await OpenTelemetryContextProvider.$activeSpan.withValue(value, operation: operation)
-    }
-
     public func setActiveSpan(_ span: Span) {
         // no-op
     }

@@ -6,7 +6,6 @@
 import Foundation
 
 import OpenTelemetryApi
-import OpenTelemetryContextProvider
 
 /// SpanBuilderSdk is SDK implementation of SpanBuilder.
 class SpanBuilderSdk: SpanBuilder {
@@ -169,7 +168,7 @@ class SpanBuilderSdk: SpanBuilder {
 
     private func getParentContext(parentType: ParentType, explicitParent: Span?, remoteParent: SpanContext?) -> SpanContext? {
         #if os(Linux)
-        let currentSpan = OpenTelementryContextProvider.activeSpan
+        let currentSpan = OpenTelemetry.activeSpan
         
         if spanContext == nil, !isRootSpan {
             spanContext = currentSpan.context
@@ -204,7 +203,11 @@ class SpanBuilderSdk: SpanBuilder {
     private static func getParentSpan(parentType: ParentType, explicitParent: Span?) -> Span? {
         switch parentType {
         case .currentSpan:
+            #if osLinux
+            return OpenTelemetry.activeSpan
+            #else
             return OpenTelemetry.instance.contextProvider.activeSpan
+            #endif
         case .explicitParent:
             return explicitParent
         default:

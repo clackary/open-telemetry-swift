@@ -76,8 +76,19 @@ public struct OpenTelemetry {
     }
 
     public static func registerContextManager(contextManager: ContextManager) {
-        #if os(iOS)
+        #if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
         instance.contextProvider.contextManager = contextManager
         #endif
     }
 }
+
+#if os(Linux)
+public extension OpenTelemetry {
+    @TaskLocal public static var activeSpan: Span?
+
+    @_unsafeInheritExecutor
+    public static func withValue<T>(_ value: Span?, operation: () async throws -> T) async rethrows -> T {
+        try await OpenTelemetry.$activeSpan.withValue(value, operation: operation)
+    }
+}
+#endif
