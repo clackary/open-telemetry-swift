@@ -89,16 +89,8 @@ public extension OpenTelemetry {
     
 #if os(Linux)
 public extension OpenTelemetry {
-    static var serviceName: String = "opentelemetry.tracing"
-    static var serviceVersion: String = "1.0"
-
-    static var collectorHost = "localhost"
-    static var collectorPort = 4317
-    static var enabled = false
-    static var useDebug = false
-
-    @TaskLocal static var activeSpan: Span?
-
+    @TaskLocal static var activeSpan: Span? = nil
+    
     @_unsafeInheritExecutor
     static func withValue<T>(_ value: Span?, operation: () async throws -> T) async rethrows -> T {
         try await OpenTelemetry.$activeSpan.withValue(value, operation: operation)
