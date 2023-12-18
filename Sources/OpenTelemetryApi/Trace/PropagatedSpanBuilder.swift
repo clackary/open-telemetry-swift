@@ -25,7 +25,7 @@ class PropagatedSpanBuilder: SpanBuilder {
         }
         #else
         if spanContext == nil, !isRootSpan {
-            spanContext = OpenTelemetry.getActiveSpan().context
+            spanContext = OpenTelemetry.getActiveSpan()?.context
         }
         #endif
         
