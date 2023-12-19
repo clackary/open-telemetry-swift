@@ -23,8 +23,12 @@ public struct SimpleSpanProcessor: SpanProcessor {
     if sampled, !span.context.traceFlags.sampled {
       return
     }
+
     let span = span.toSpanData()
     let spanExporterAux = self.spanExporter
+
+    print("SimpleSpanProcessor.\(#function): spanData: \(span)")
+
     processorQueue.async {
       _ = spanExporterAux.export(spans: [span])
     }

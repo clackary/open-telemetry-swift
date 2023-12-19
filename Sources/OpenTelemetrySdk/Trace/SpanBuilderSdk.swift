@@ -155,6 +155,9 @@ class SpanBuilderSdk: SpanBuilder {
         if startAsActive {
             OpenTelemetry.instance.contextProvider.setActiveSpan(createdSpan)
         }
+
+        print("SpanBuilderSdk.\(#function): created span: \(createdSpan)")
+        
         return createdSpan
     }
 
@@ -169,6 +172,8 @@ class SpanBuilderSdk: SpanBuilder {
     private func getParentContext(parentType: ParentType, explicitParent: Span?, remoteParent: SpanContext?) -> SpanContext? {
         let currentSpan = OpenTelemetry.getActiveSpan()
 
+        print("SpanBuilderSDK.\(#function): active span: \(currentSpan)")
+        
         var parentContext: SpanContext?
         
         switch parentType {
