@@ -95,11 +95,17 @@ public extension OpenTelemetry {
 public extension OpenTelemetry {
     @TaskLocal
     static var activeSpan: Span? = nil
-    
+
+    #if ASYNC_WITH_VALUE
     @_unsafeInheritExecutor
     static func withValue<T>(_ value: Span?, operation: () async throws -> T) async rethrows -> T {
         try await OpenTelemetry.$activeSpan.withValue(value, operation: operation)
     }
+    #else
+    static func withValue<T>(_ value: Span?, operation: () throws -> T) rethrows -> T {
+        try OpenTelemetry.$activeSpan.withValue(value, operation: operation)
+    }
+    #endif
 
     static func getActiveSpan() -> Span? {
         return activeSpan
