@@ -77,38 +77,12 @@ public struct OpenTelemetry {
 
 #if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
 public extension OpenTelemetry {
-    @TaskLocal
-    @available(macOS 10.15, *)
-    static var nilActiveSpan: Span? = nil
-    
     static func registerContextManager(contextManager: ContextManager) {
         instance.contextProvider.contextManager = contextManager
     }
 
     static func getActiveSpan() -> Span? {
         return instance.contextProvider.activeSpan
-    }
-}
-#endif
-    
-#if os(Linux)
-public extension OpenTelemetry {
-    @TaskLocal
-    static var activeSpan: Span? = nil
-
-    #if ASYNC_WITH_VALUE
-    @_unsafeInheritExecutor
-    static func withValue<T>(_ value: Span?, operation: () async throws -> T) async rethrows -> T {
-        try await OpenTelemetry.$activeSpan.withValue(value, operation: operation)
-    }
-    #else
-    static func withValue<T>(_ value: Span?, operation: @escaping () throws -> T) rethrows -> T {
-        try OpenTelemetry.$activeSpan.withValue(value, operation: operation)
-    }
-    #endif
-
-    static func getActiveSpan() -> Span? {
-        return activeSpan
     }
 }
 #endif
