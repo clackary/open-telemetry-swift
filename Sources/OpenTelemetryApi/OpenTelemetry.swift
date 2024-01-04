@@ -102,7 +102,7 @@ public extension OpenTelemetry {
         try await OpenTelemetry.$activeSpan.withValue(value, operation: operation)
     }
     #else
-    static func withValue<T>(_ value: Span?, operation: () throws -> T) rethrows -> T {
+    static func withValue<T>(_ value: Span?, operation: @escaping () throws -> T) rethrows -> T {
         try OpenTelemetry.$activeSpan.withValue(value, operation: operation)
     }
     #endif
