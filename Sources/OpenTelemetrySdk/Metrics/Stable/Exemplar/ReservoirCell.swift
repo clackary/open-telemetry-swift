@@ -28,11 +28,15 @@ public class ReservoirCell {
         doubleValue = value
         offerMeasurement(attributes: attributes)
     }
-    
+
+    private func getActiveSpan() -> SpanContext? {
+        return OpenTelemetry.getActiveSpan()?.context
+    }
+
     private func offerMeasurement(attributes: [String: AttributeValue]) {
         self.attributes = attributes
         recordTime = clock.nanoTime
-        if let context = OpenTelemetry.instance.contextProvider.activeSpan?.context, context.isValid {
+        if let context = getActiveSpan(), context.isValid {
             self.spanContext = context
         }
     }

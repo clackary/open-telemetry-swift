@@ -4,6 +4,7 @@
  */
 
 import Foundation
+
 import OpenTelemetryApi
 
 /// SpanBuilderSdk is SDK implementation of SpanBuilder.
@@ -154,6 +155,9 @@ class SpanBuilderSdk: SpanBuilder {
         if startAsActive {
             OpenTelemetry.instance.contextProvider.setActiveSpan(createdSpan)
         }
+
+        print("SpanBuilderSdk.\(#function): created span: \(createdSpan)")
+        
         return createdSpan
     }
 
@@ -166,9 +170,12 @@ class SpanBuilderSdk: SpanBuilder {
     }
 
     private func getParentContext(parentType: ParentType, explicitParent: Span?, remoteParent: SpanContext?) -> SpanContext? {
-        let currentSpan = OpenTelemetry.instance.contextProvider.activeSpan
+        let currentSpan = OpenTelemetry.getActiveSpan()
 
+        print("SpanBuilderSDK.\(#function): active span: \(currentSpan)")
+        
         var parentContext: SpanContext?
+        
         switch parentType {
         case .noParent:
             parentContext = nil
@@ -186,7 +193,7 @@ class SpanBuilderSdk: SpanBuilder {
     private static func getParentSpan(parentType: ParentType, explicitParent: Span?) -> Span? {
         switch parentType {
         case .currentSpan:
-            return OpenTelemetry.instance.contextProvider.activeSpan
+            return OpenTelemetry.getActiveSpan()
         case .explicitParent:
             return explicitParent
         default:
