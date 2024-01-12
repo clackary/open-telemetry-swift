@@ -1,32 +1,34 @@
 
-# Welcome to the opentelemetry-swift for Linux Project #
+# Welcome to the PassiveLogic _opentelemetry-swift_ Port to Linux #
 
-This project is a fork of the _opentelemetry-swift_ (OTEL) reference implmentation that runs only on Apple operating
-systems (MacOS, iOS, tvOS, et al.)[^1]. For Linux, this port relies on a small C library that offers support for some
-of the basic features of Apple's _os.activity_ library, upon which the reference Swift library relies heavily.
+This project is a fork of the _opentelemetry-swift_ (OTEL) reference implmentation (which runs only on Apple operating
+systems (MacOS, iOS, tvOS, et al.) that adds support for Linux distributions[^1]. The official _opentelemetry-swift_
+project is restricted to Apple operating systems due to its dependency on several Apple-specific libraries; namely,
+_os.log_ and _os.activity_. The latter is problematic for other platforms, in that it a) relies on Apple kernel support;
+b) is poorly documented; and c) has no publicly available source code.
 
-This port has been tested on both Ubuntu 20.04 LTS and 22.04 LTS; ARM64 and AMD64 architectures. In general,
-_opentelemetry-swift-linux_ runs well, and seems to generate proper trace/span data for straightforward cases. What has
-not been tested, and what will unlikely work, are complicated nestings of spans. What does "complicated" mean here? I've
-no idea. Since there is no Linux analog to _os.activity_, I had to make an engineering guess as to what Linux currently
-has that might provide OTEL what it needs. That code lives in the Libpl project, and is provided as a C library made
-available in Debian packages.
+## Background ##
 
-## Future Work ##
+The reference implementation of _opentelemetry-swift_ employs Apple's _os.activity_ library to provide unique contexts
+for each Span created, obviating the need to pass around unique identifiers. The result is a proper collection of
+related spans that may be sent to various data collectors, and eventually data sources (eg. Tempo). To affect the same
+behavior on Linux, this port employs Swift Tasks and TaskLocal variables. The _opentelemetry-swift_ API has been
+extended using Swift constructs, which avoids breaking the reference document. Additionally, both the SDK and API
+code has been refactored to abstract the underlying operating systems, allowing the library and its clients to continue
+running within Apple environments, along with Linux.
 
-I would like to locate and/or develop a robust replacement for the _os.activity_ capabilities, insofar as is necessary
-for _opentelemetry-swift_ to run reliably on Linux. This will take quite a bit of research, possibly even exposing Linux
-kernel capabilities not presently available. We shall see.
+Once this port has been thoroughly exercised within PassiveLogic applications, a Gitlab Pull Request will be submitted
+to the reference project's authors, with hopes that our solution will be accepted.
 
-## Reference Implementation ##
+## Supported Linux Architectures ##
 
-For extensive documentation on the OTEL reference implementation for Swift, go [here](https://github.com/open-telemetry/opentelemetry-swift).
+This port has been tested on both Ubuntu 20.04 LTS and 22.04 LTS; _arm64_ and _amd64_ processors, along with regression
+tests on MacOS (arm64). Note that there is nothing Linux-distribution-specific about this port; thus, theoretically it
+should run on any Linux version supporting Swift 5.8 or newer.
 
 ## References ##
 
-- The [Libpl](https://github.com/youngde811/libpl) project.
-- The [CLibpl](https://github.com/youngde811/CLibpl) project, which provides the ability to include the _libpl_ C
-  library in Swift projects.
+- The [opentelemetry-swift](https://github.com/open-telemetry/opentelemetry-swift) reference implementation.
 
 ## Original Authors ##
 
@@ -34,6 +36,6 @@ The development team for [_opentelemetry-swift_](https://github.com/open-telemet
 
 ## Port Author ##
 
-[David E. Young](youngde811@pobox.com)
+[David E. Young](bosshog@passivelogic.com)
 
-[^1]: tvOS? Seriously?
+[^1]: Development and testing has thus far been performed only on Ubuntu 20.04 LTS.
