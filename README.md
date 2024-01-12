@@ -29,6 +29,8 @@ should run on any Linux version supporting Swift 5.8 or newer.
 ## References ##
 
 - The [opentelemetry-swift](https://github.com/open-telemetry/opentelemetry-swift) reference implementation.
+- The PassiveLogic [Observability](https://gitlab.com/PassiveLogic/cloud/observability) library, a thin wrapper around
+  _opentelemetry-swift_.
 
 ## Port Author ##
 
