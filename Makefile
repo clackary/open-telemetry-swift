@@ -30,9 +30,8 @@ else
 all: opentelemetry
 endif
 
-opentelemetry: SWIFTC_FLAGS+=--configuration debug -Xswiftc -g
 opentelemetry:
-	${SWIFT} build $(SWIFTC_FLAGS) $(SWIFT_FLAGS)
+	${SWIFT} build $(SWIFTC_FLAGS)
 
 update: resolve
 	$(SWIFT) package update
