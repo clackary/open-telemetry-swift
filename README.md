@@ -30,10 +30,6 @@ should run on any Linux version supporting Swift 5.8 or newer.
 
 - The [opentelemetry-swift](https://github.com/open-telemetry/opentelemetry-swift) reference implementation.
 
-## Original Authors ##
-
-The development team for [_opentelemetry-swift_](https://github.com/open-telemetry/opentelemetry-swift).
-
 ## Port Author ##
 
 [David E. Young](bosshog@passivelogic.com)
