@@ -1,5 +1,5 @@
 
-# Welcome to the PassiveLogic _opentelemetry-swift_ Port to Linux #
+# Welcome to the _opentelemetry-swift_ Linux Port #
 
 This project is a fork of the _opentelemetry-swift_ (OTEL) reference implmentation (which runs only on Apple operating
 systems (MacOS, iOS, tvOS, et al.) that adds support for Linux distributions[^1]. The official _opentelemetry-swift_
