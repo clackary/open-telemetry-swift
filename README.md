@@ -38,7 +38,8 @@ separate task will have its own instance value of _activeSpan_.
 
 To make our _optentelemetry-swift_ port simpler to use by developers, we created the
 [Observability](https://gitlab.com/PassiveLogic/cloud/observability) library that provides a clean API for writing
-tracing blocks, and hiding the implementation details.
+tracing blocks, and hiding the implementation details. See that repository's home page for documentation and usage
+examples.
 
 ## References ##
 
