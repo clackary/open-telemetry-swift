@@ -9,10 +9,6 @@
 import Foundation
 import OpenTelemetryApi
 
-#if canImport(os.log)
-import os.log
-#endif
-
 public class LoggerSdk : OpenTelemetryApi.Logger {
     private let sharedState: LoggerSharedState
     private let instrumentationScope : InstrumentationScopeInfo
@@ -57,13 +53,7 @@ public class LoggerSdk : OpenTelemetryApi.Logger {
         return LoggerSdk(sharedState: sharedState, instrumentationScope: instrumentationScope, eventDomain: self.eventDomain, withTraceContext: false)
     }
 
-    #if os(Linux)
     func logMessage(message: String) {
         print(message)
     }
-    #else
-    func logMessage(message: StaticString) {
-        os_log(message)
-    }
-    #endif
 }

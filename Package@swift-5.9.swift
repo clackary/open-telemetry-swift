@@ -5,8 +5,10 @@ import PackageDescription
 
 let package = Package(
   name: "opentelemetry-swift",
+  platforms: [
+      .macOS("15.0"),
+  ],
   products: [
-    .library(name: "TaskSupport", targets: ["TaskSupport"]),
     .library(name: "OpenTelemetryApi", type: .static, targets: ["OpenTelemetryApi"]),
     .library(name: "OpenTelemetrySdk", type: .static, targets: ["OpenTelemetrySdk"]),
     .library(name: "ResourceExtension", type: .static, targets: ["ResourceExtension"]),
@@ -30,14 +32,8 @@ let package = Package(
     .package(url: "https://github.com/ashleymills/Reachability.swift", from: "5.1.0"),
   ],
   targets: [
-    .target(
-      name: "TaskSupport",
-      dependencies: []
-    ),
     .target(name: "OpenTelemetryApi",
-            dependencies: [
-              "TaskSupport"
-            ]
+            dependencies: [ ]
     ),
     .target(name: "OpenTelemetrySdk",
             dependencies: [

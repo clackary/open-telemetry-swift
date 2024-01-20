@@ -6,6 +6,7 @@
 import Foundation
 
 #if os(Linux)
+
 public class ApplicationDataSource: IApplicationDataSource {
     public init() {}
     
@@ -25,7 +26,9 @@ public class ApplicationDataSource: IApplicationDataSource {
         "ApplicationDataSource: Linux unsupported"
     }
 }
+
 #else
+
 public class ApplicationDataSource: IApplicationDataSource {
     public init() {}
     
@@ -45,4 +48,5 @@ public class ApplicationDataSource: IApplicationDataSource {
         Bundle.main.infoDictionary?[kCFBundleVersionKey as String] as? String
     }
 }
+
 #endif
