@@ -58,9 +58,9 @@ specific to those things remains conditionally compiled in the _open-telemetry-s
 
 ## References ##
 
-- The [opentelemetry-swift](https://github.com/open-telemetry/opentelemetry-swift) reference implementation.
+- The [open-telemetry-swift](https://github.com/open-telemetry/opentelemetry-swift) reference implementation.
 - The PassiveLogic [Observability](https://gitlab.com/PassiveLogic/cloud/observability) library, a thin wrapper around
-  _opentelemetry-swift_.
+  the  _open-telemetry-swift_ API.
 
 ## Port Author ##
 
