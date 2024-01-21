@@ -17,9 +17,9 @@ collection of related spans that may be sent to various data collectors, and eve
 Unfortunately, the _os.activity_ library was intended for use by Apple developers when debugging code via logging; it is
 considered beta software and not intended for other applications. Regardless, to affect similar behavior on Linux, this
 port employs Swift's new structured concurrency model; notably Tasks and TaskLocal variables. The _open-telemetry-swift_
-API has been extended using these Swift constructs, which avoids breaking the reference document and API. Additionally,
-both the SDK and API code have been refactored to abstract the underlying operating systems, allowing the library and its
-clients to continue running within Apple environments, along with Linux.
+API has been adapted to use these Swift constructs internally, which avoids breaking the reference document and
+API. Additionally, both the SDK and API code have been refactored to abstract the underlying operating systems, allowing
+the library and its clients to continue running within Apple environments, along with Linux.
 
 Note: As mentioned above, once this port has been thoroughly exercised within PassiveLogic applications, a Gitlab Pull
 Request will be submitted to the reference project's authors, with hopes that our solution will be accepted.
