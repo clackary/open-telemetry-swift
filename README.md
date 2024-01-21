@@ -33,15 +33,16 @@ should run on any Linux version supporting Swift 5.8 or newer.
 ## Notable Changes ##
 
 Apart from the refactoring effort, the central changes for Linux occured with these OpenTelemetryApi source files:
-- _OpenTelemetry.swift_: Refactored.
-- _OpenTelemetryLinux.swift_: New file containing Linux-specific code.
+- _OpenTelemetry.swift_: Refactored to support Swift structured concurrency.
+- _SpanBuilderSdk.swift_: Small modifications to reflect changes to the API code base.
 
 In addition, a number of other source files were slightly modified to work with the new abstractions. Also, some modules
-in _OpenTelemetrySdk_ were originally written using _os.log_, requiring conditional compilation for them as well.
+in _OpenTelemetrySdk_ were originally written using _os.log_, requiring conditional compilation for them as well. We
+intend to replace the original _os.log_ library with an all-Swift generic logging package.
 
 For Linux, we have addressed the absence of _os.activity_ using Swift's structured concurrency model; in particular
-TaskLocal variables and their _withValue_ construct. All spans for every bound instance of the _activeSpan_ variable
-will be properly collected and related; each separate task will have its own instance value of _activeSpan_.
+the use of TaskLocal variables and their _withValue_ construct. All spans for every bound instance of the _activeSpan_
+variable will be properly collected and related; each separate task will have its own instance value of _activeSpan_.
 
 To make our _open-telemetry-swift_ port simpler to use by developers, we created the
 [Observability](https://gitlab.com/PassiveLogic/cloud/observability) library that provides a clean API for writing
