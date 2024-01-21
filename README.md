@@ -21,8 +21,8 @@ API has been adapted to use these Swift constructs internally, which avoids brea
 the client-visible API. Additionally, both the SDK and API code have been refactored to abstract the underlying
 operating systems, allowing the library and its clients to continue running within Apple environments, along with Linux.
 
-Note: As mentioned above, once this port has been thoroughly exercised within PassiveLogic applications, a Gitlab Pull
-Request will be submitted to the reference project's authors, with hopes that our solution will be accepted.
+Note: As mentioned above, once this port has been thoroughly exercised within PassiveLogic applications, a GitHub Pull
+Request (PR) will be submitted to the reference project's authors, with hopes that our solution will be accepted.
 
 ## Supported Linux Architectures ##
 
