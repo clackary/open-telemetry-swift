@@ -54,7 +54,7 @@ examples.
 Recently, we decided to integrate the behavior of _open-telemetry-swift_ on MacOS with its Linux implementation. In
 other words, the code for both operating systems now employs structured concurrency. This eliminates all dependencies on
 _os.activity_ and _os.log_ for those platforms. Other Apple-specific devices (tvOS, watchOS, etc.) are ignored. The code
-specific to those things remain conditionally compiled in the _open-telemetry-swift_ source code.
+specific to those things remains conditionally compiled in the _open-telemetry-swift_ source code.
 
 ## References ##
 
