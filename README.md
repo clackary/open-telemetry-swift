@@ -1,5 +1,5 @@
 
-# Welcome to our Linux Port of _open-telemetry-swift_ #
+# Welcome to Linux Port of _Open Telemetry Swift_ #
 
 This project is a fork of the _open-telemetry-swift_ (OTEL) reference implementation, which runs only on Apple operating
 systems (MacOS, iOS, tvOS, et al.). This port adds support for Linux distributions[^1]. The official _open-telemetry-swift_
