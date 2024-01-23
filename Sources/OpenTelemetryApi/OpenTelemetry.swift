@@ -78,7 +78,7 @@ public extension OpenTelemetry {
 
     @_unsafeInheritExecutor
     @discardableResult
-    static func withValueAsync<T>(_ value: Span?, operation: () async throws -> T) async rethrows -> T {
+    static func withValue<T>(_ value: Span?, operation: @escaping () async throws -> T) async rethrows -> T {
         try await OpenTelemetry.$activeSpan.withValue(value, operation: operation)
     }
 
