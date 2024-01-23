@@ -4,6 +4,7 @@
  */
 
 import Foundation
+import SwiftyBeaver
 
 /**
  * Implementation of the B3 propagation protocol. See
@@ -24,6 +25,8 @@ public class B3Propagator: TextMapPropagator {
     private static let maxSpanIdLength = 2 * SpanId.size
     private static let sampledFlags = TraceFlags().settingIsSampled(true)
     private static let notSampledFlags = TraceFlags().settingIsSampled(false)
+
+    private static let logger = getLogger()
 
     private var singleHeaderInjection: Bool
 
@@ -54,11 +57,13 @@ public class B3Propagator: TextMapPropagator {
         var spanContext: SpanContext?
 
         spanContext = getSpanContextFromSingleHeader(carrier: carrier, getter: getter)
+        
         if spanContext == nil {
             spanContext = getSpanContextFromMultipleHeaders(carrier: carrier, getter: getter)
         }
+        
         if spanContext == nil {
-            print("Invalid SpanId in B3 header. Returning no span context.")
+            B3Propagator.logger.warning("Invalid SpanId in B3 header. Returning no span context.")
         }
 
         return spanContext
@@ -128,5 +133,14 @@ public class B3Propagator: TextMapPropagator {
 
     private func isSpanIdValid(_ spanId: String) -> Bool {
         return !(spanId.isEmpty || spanId.count > B3Propagator.maxSpanIdLength)
+    }
+
+    private static func getLogger() -> SwiftyBeaver.Type {
+        let logger = SwiftyBeaver.self
+
+        logger.addDestination(ConsoleDestination())
+        logger.addDestination(FileDestination())
+
+        return logger
     }
 }

@@ -27,6 +27,7 @@ let package = Package(
     .package(url: "https://github.com/apple/swift-nio.git", from: "2.0.0"),
     .package(url: "https://github.com/grpc/grpc-swift.git", from: "1.0.0"),
     .package(url: "https://github.com/apple/swift-protobuf.git", from: "1.20.2"),
+    .package(url: "https://github.com/SwiftyBeaver/SwiftyBeaver.git", .upToNextMajor(from: "2.0.0")),
     .package(url: "https://github.com/apple/swift-log.git", from: "1.5.4"),
     .package(url: "https://github.com/apple/swift-metrics.git", from: "2.1.1"),
     .package(url: "https://github.com/ashleymills/Reachability.swift", from: "5.1.0"),
@@ -34,7 +35,7 @@ let package = Package(
   targets: [
     .target(name: "OpenTelemetryApi",
             dependencies: [
-              .product(name: "Logging", package: "swift-log"),
+              .product(name: "SwiftyBeaver", package: "SwiftyBeaver"),
             ]
     ),
     .target(name: "OpenTelemetrySdk",

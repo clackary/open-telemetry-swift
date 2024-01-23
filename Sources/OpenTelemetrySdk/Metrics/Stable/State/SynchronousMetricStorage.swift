@@ -5,6 +5,7 @@
 
 import Foundation
 import OpenTelemetryApi
+import SwiftyBeaver
 
 enum MetricStoreError: Error {
     case maxCardinality
@@ -13,8 +14,12 @@ enum MetricStoreError: Error {
 typealias SynchronousMetricStorageProtocol = MetricStorage & WritableMetricStorage
 
 public class SynchronousMetricStorage: SynchronousMetricStorageProtocol {
+    private static let logger = getLogger()
+
     let registeredReader: RegisteredReader
+
     public private(set) var metricDescriptor: MetricDescriptor
+
     let aggregatorTemporality: AggregationTemporality
     let aggregator: StableAggregator
     var aggregatorHandles = [[String: AttributeValue]: AggregatorHandle]()
@@ -96,9 +101,11 @@ public class SynchronousMetricStorage: SynchronousMetricStorageProtocol {
             let handle = try getAggregatorHandle(attributes: attributes)
             handle.recordLong(value: value, attributes: attributes)
         } catch MetricStoreError.maxCardinality {
-            print("max cardinality (\(MetricStorageConstants.MAX_CARDINALITY)) reached for metric store. Discarding recorded value \"\(value)\" with attributes: \(attributes)")
+            let msg = "max cardinality (\(MetricStorageConstants.MAX_CARDINALITY)) reached for metric store. Discarding recorded value \"\(value)\" with attributes: \(attributes)"
+
+            SynchronousMetricStorage.logger.error("SynchronousMetricStorage.\(#function): \(msg)")
         } catch {
-            // TODO: record error
+            SynchronousMetricStorage.logger.error("SynchronousMetricStorage.\(#function): unknown exception")
         }
     }
     
@@ -107,9 +114,20 @@ public class SynchronousMetricStorage: SynchronousMetricStorageProtocol {
             let handle = try getAggregatorHandle(attributes: attributes)
             handle.recordDouble(value: value, attributes: attributes)
         } catch MetricStoreError.maxCardinality {
-            print("max cardinality (\(MetricStorageConstants.MAX_CARDINALITY)) reached for metric store. Discarding recorded value \"\(value)\" with attributes: \(attributes)")
+            let msg = "max cardinality (\(MetricStorageConstants.MAX_CARDINALITY)) reached for metric store. Discarding recorded value \"\(value)\" with attributes: \(attributes)"
+
+            SynchronousMetricStorage.logger.error("SynchronousMetricStorage.\(#function): \(msg)")
         } catch {
-            // TODO: error
+            SynchronousMetricStorage.logger.error("SynchronousMetricStorage.\(#function): unknown exception")
         }
+    }
+
+    private static func getLogger() -> SwiftyBeaver.Type {
+        let logger = SwiftyBeaver.self
+
+        logger.addDestination(ConsoleDestination())
+        logger.addDestination(FileDestination())
+
+        return logger
     }
 }
