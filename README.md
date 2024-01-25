@@ -1,28 +1,28 @@
 
-# Welcome to Linux Port of _Open Telemetry Swift_ #
+# Welcome to Our Linux Port of _Open Telemetry Swift_ #
 
 This project is a fork of the _open-telemetry-swift_ (OTEL) reference implementation, which runs only on Apple operating
 systems (MacOS, iOS, tvOS, et al.). This port adds support for Linux distributions[^1]. The official _open-telemetry-swift_
 project is restricted to Apple operating systems due to its dependency on several Apple-specific libraries; namely,
 _os.log_ and _os.activity_. The latter is problematic for other platforms, in that it a) relies on Apple kernel support;
 b) is poorly documented; and c) has no publicly available source code. However, the original OTEL project has an open
-feature issue for Linux support, and it is our intention to submit a PR once we have confirmed this work's stability.
+feature issue for Linux support, and it is our intention to submit a PR once we have confirmed this work's stability
+(assuming the authors are interested).
 
 ## Background ##
 
 The reference implementation of _open-telemetry-swift_ employs Apple's _os.activity_ library to provide unique contexts
-for each Span created, obviating the need to pass around unique identifiers among code modules. The result is a proper
-collection of related spans that may be sent to various data collectors, and eventually data sources (eg. Tempo).
+for each tracing span created, obviating the need to pass around unique identifiers among code modules. The result is a
+proper collection of related spans that may be sent to various data collectors, and eventually data sources (eg. Tempo),
+and viewed via a metric application like Grafana.
 
 Unfortunately, the _os.activity_ library was intended for use by Apple developers when debugging code via logging; it is
-considered beta software and not intended for other applications. Regardless, to affect similar behavior on Linux, this
-port employs Swift's new structured concurrency model; notably Tasks and TaskLocal variables. The _open-telemetry-swift_
-API has been adapted to use these Swift constructs internally, which avoids breaking the reference document and
-the client-visible API. Additionally, both the SDK and API code have been refactored to abstract the underlying
-operating systems, allowing the library and its clients to continue running within Apple environments, along with Linux.
-
-Note: As mentioned above, once this port has been thoroughly exercised within PassiveLogic applications, a GitHub Pull
-Request (PR) will be submitted to the reference project's authors, with hopes that our solution will be accepted.
+considered beta software and not intended for other applications (or operating systems). To affect similar behavior on
+Linux, this port employs Swift's new structured concurrency model; notably Tasks and TaskLocal variables. The
+_open-telemetry-swift_ library has been adapted to use these Swift constructs internally, which avoids breaking the
+reference document and the client-visible API. Additionally, both the SDK and API code have been refactored to abstract
+the underlying operating systems, allowing the library and its clients to continue running within Apple environments,
+along with Linux.
 
 ## Supported Linux Architectures ##
 
@@ -38,7 +38,7 @@ Apart from the refactoring effort, the central changes for Linux occured with th
 
 In addition, a number of other source files were slightly modified to work with the new abstractions. Also, some modules
 in _OpenTelemetrySdk_ were originally written using _os.log_, requiring conditional compilation for them as well. We
-intend to replace the original _os.log_ library with an all-Swift generic logging package.
+replaced the original _os.log_ library with _SwiftyBeaver_, a very simple all-Swift logging package[^2]
 
 For Linux, we have addressed the absence of _os.activity_ using Swift's structured concurrency model; in particular
 the use of TaskLocal variables and their _withValue_ construct. All spans for every bound instance of the _activeSpan_
@@ -68,3 +68,5 @@ specific to those things remains conditionally compiled in the _open-telemetry-s
 [David E. Young](bosshog@passivelogic.com)
 
 [^1]: Development and testing has thus far been performed only on Ubuntu 20.04 LTS.
+[^2]: Logging is a bit of an issue in open-telemetry_swift; the well-used Apple logging package does not build properly
+    if referenced from OpenTelemetryApi, but functions just fine within the SDK.
