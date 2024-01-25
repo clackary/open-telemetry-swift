@@ -56,6 +56,13 @@ other words, the code for both operating systems now employs structured concurre
 _os.activity_ and _os.log_ for those platforms. Other Apple-specific devices (tvOS, watchOS, etc.) are ignored. The code
 specific to those things remains conditionally compiled in the _open-telemetry-swift_ source code.
 
+## Logging... ##
+
+... is weird right now. The well-used Apple Swift logging package fails to build properly if referenced from within the
+_OpenTelemetryApi_ code base, but compiles just fine from the SDK. The original authors have several TODO comments about
+logging from the API; for now we are using _SwiftyBeaver_, a very simple Swift logging package. This area will be
+revisited at some point.
+
 ## References ##
 
 - The [open-telemetry-swift](https://github.com/open-telemetry/opentelemetry-swift) reference implementation.
@@ -68,5 +75,4 @@ specific to those things remains conditionally compiled in the _open-telemetry-s
 [David E. Young](bosshog@passivelogic.com)
 
 [^1]: Development and testing has thus far been performed only on Ubuntu 20.04 LTS.
-[^2]: Logging is a bit of an issue in open-telemetry_swift; the well-used Apple logging package does not build properly
-    if referenced from OpenTelemetryApi, but functions just fine within the SDK.
+[^2]: Logging is a bit of an issue in open-telemetry_swift, particulary on the API side.
