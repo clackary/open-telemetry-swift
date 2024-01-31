@@ -32,7 +32,7 @@ should run on any Linux version supporting Swift 5.8 or newer.
 
 ## Notable Changes ##
 
-Apart from the refactoring effort, the central changes for Linux occured with these source files:
+Apart from the refactoring effort, the central changes for Linux occured within these source files:
 - _OpenTelemetry.swift_: Refactored to support Swift structured concurrency.
 - _SpanBuilderSdk.swift_: Small modifications to reflect changes to the API code base.
 
