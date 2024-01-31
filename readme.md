@@ -75,4 +75,4 @@ revisited at some point.
 [David E. Young](bosshog@passivelogic.com)
 
 [^1]: Development and testing has thus far been performed only on Ubuntu 20.04 LTS.
-[^2]: Logging is a bit of an issue in open-telemetry_swift, particulary on the API side.
+[^2]: Logging is a bit of an issue in open-telemetry-swift, particulary on the API side.
