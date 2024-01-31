@@ -23,11 +23,7 @@ public struct OpenTelemetry {
 
         // select the context manager
         
-        #if os(Linux)
         contextProvider = OpenTelemetryContextProvider()
-        #else
-        contextProvider = OpenTelemetryContextProvider(contextManager: ActivityContextManager.instance)
-        #endif
     }
 
     /// Registered tracerProvider or default via DefaultTracerProvider.instance.
@@ -75,7 +71,29 @@ public struct OpenTelemetry {
     }
 }
 
-#if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
+#if os(Linux) || os(macOS)
+public extension OpenTelemetry {
+    @TaskLocal
+    static var activeSpan: Span? = nil
+
+    @_unsafeInheritExecutor
+    @discardableResult
+    static func withValue<T>(_ value: Span?, operation: @escaping () async throws -> T) async rethrows -> T {
+        try await OpenTelemetry.$activeSpan.withValue(value, operation: operation)
+    }
+
+    @discardableResult
+    static func withValue<T>(_ value: Span?, operation: @escaping () throws -> T) rethrows -> T {
+        try OpenTelemetry.$activeSpan.withValue(value, operation: operation)
+    }
+
+    static func getActiveSpan() -> Span? {
+        return activeSpan
+    }
+}
+#endif
+
+#if os(iOS) || os(tvOS) || os(watchOS)
 public extension OpenTelemetry {
     static func registerContextManager(contextManager: ContextManager) {
         instance.contextProvider.contextManager = contextManager

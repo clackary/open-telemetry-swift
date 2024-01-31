@@ -20,15 +20,11 @@ OBJ := $(SRC:$(SRCDIR)/%.c=$(LIBDIR)/%.o)
 LDFLAGS := -L.
 LDLIBS := -l$(...)
 
-.PHONY: all clean ctags etags libpl realclean reset resolve update
+.PHONY: all clean ctags etags realclean reset resolve update
 
 $(info Building for: [${uname}])
 
-ifeq ($(uname), Linux)
 all: opentelemetry
-else
-all: opentelemetry
-endif
 
 opentelemetry:
 	${SWIFT} build $(SWIFTC_FLAGS)

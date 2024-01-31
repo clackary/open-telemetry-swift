@@ -109,7 +109,7 @@ private class BatchWorker : Thread {
 
             if logRecordList.count < maxExportBatchSize {
                 repeat {
-                    cond.wait(until: Date().addingTimeInterval(scheduleDelay))
+                    _ = cond.wait(until: Date().addingTimeInterval(scheduleDelay))
                 } while logRecordList.isEmpty
             }
             

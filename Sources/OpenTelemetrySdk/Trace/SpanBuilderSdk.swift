@@ -6,6 +6,7 @@
 import Foundation
 
 import OpenTelemetryApi
+import SwiftyBeaver
 
 /// SpanBuilderSdk is SDK implementation of SpanBuilder.
 class SpanBuilderSdk: SpanBuilder {
@@ -19,6 +20,8 @@ class SpanBuilderSdk: SpanBuilder {
     static let traceOptionsSampled = TraceFlags().settingIsSampled(true)
     static let traceOptionsNotSampled = TraceFlags().settingIsSampled(false)
 
+    static let logger = getLogger()
+    
     private var spanName: String
     private var instrumentationScopeInfo: InstrumentationScopeInfo
     private var tracerSharedState: TracerSharedState
@@ -156,7 +159,7 @@ class SpanBuilderSdk: SpanBuilder {
             OpenTelemetry.instance.contextProvider.setActiveSpan(createdSpan)
         }
 
-        print("SpanBuilderSdk.\(#function): created span: \(createdSpan)")
+        SpanBuilderSdk.logger.info("SpanBuilderSdk.\(#function): created span: \(createdSpan)")
         
         return createdSpan
     }
@@ -172,7 +175,7 @@ class SpanBuilderSdk: SpanBuilder {
     private func getParentContext(parentType: ParentType, explicitParent: Span?, remoteParent: SpanContext?) -> SpanContext? {
         let currentSpan = OpenTelemetry.getActiveSpan()
 
-        print("SpanBuilderSDK.\(#function): active span: \(currentSpan)")
+        SpanBuilderSdk.logger.info("SpanBuilderSDK.\(#function): active span: \(String(describing: currentSpan))")
         
         var parentContext: SpanContext?
         
@@ -199,5 +202,14 @@ class SpanBuilderSdk: SpanBuilder {
         default:
             return nil
         }
+    }
+
+    private static func getLogger() -> SwiftyBeaver.Type {
+        let logger = SwiftyBeaver.self
+
+        logger.addDestination(ConsoleDestination())
+        logger.addDestination(FileDestination())
+
+        return logger
     }
 }

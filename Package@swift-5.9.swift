@@ -5,8 +5,10 @@ import PackageDescription
 
 let package = Package(
   name: "opentelemetry-swift",
+  platforms: [
+    .macOS(.v13),
+  ],
   products: [
-    .library(name: "TaskSupport", targets: ["TaskSupport"]),
     .library(name: "OpenTelemetryApi", type: .static, targets: ["OpenTelemetryApi"]),
     .library(name: "OpenTelemetrySdk", type: .static, targets: ["OpenTelemetrySdk"]),
     .library(name: "ResourceExtension", type: .static, targets: ["ResourceExtension"]),
@@ -25,18 +27,15 @@ let package = Package(
     .package(url: "https://github.com/apple/swift-nio.git", from: "2.0.0"),
     .package(url: "https://github.com/grpc/grpc-swift.git", from: "1.0.0"),
     .package(url: "https://github.com/apple/swift-protobuf.git", from: "1.20.2"),
-    .package(url: "https://github.com/apple/swift-log.git", from: "1.4.4"),
+    .package(url: "https://github.com/SwiftyBeaver/SwiftyBeaver.git", .upToNextMajor(from: "2.0.0")),
+    .package(url: "https://github.com/apple/swift-log.git", from: "1.5.4"),
     .package(url: "https://github.com/apple/swift-metrics.git", from: "2.1.1"),
     .package(url: "https://github.com/ashleymills/Reachability.swift", from: "5.1.0"),
   ],
   targets: [
-    .target(
-      name: "TaskSupport",
-      dependencies: []
-    ),
     .target(name: "OpenTelemetryApi",
             dependencies: [
-              "TaskSupport"
+              .product(name: "SwiftyBeaver", package: "SwiftyBeaver"),
             ]
     ),
     .target(name: "OpenTelemetrySdk",

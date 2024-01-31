@@ -20,21 +20,18 @@ class PropagatedSpanBuilder: SpanBuilder {
 
     @discardableResult
     public func startSpan() -> Span {
-        #if os(Linux)
+        #if os(Linux) || os(macOS)
         if spanContext == nil, !isRootSpan {
             spanContext = nil
-        }
-        #else
-        if spanContext == nil, !isRootSpan {
-            spanContext = OpenTelemetry.getActiveSpan()?.context
         }
         #endif
         
         return PropagatedSpan(name: spanName,
-                              context: spanContext ?? SpanContext.create(traceId: TraceId.random(),
-                                                                         spanId: SpanId.random(),
-                                                                         traceFlags: TraceFlags(),
-                                                                         traceState: TraceState()))
+                              context: spanContext ?? SpanContext
+                                  .create(traceId: TraceId.random(),
+                                          spanId: SpanId.random(),
+                                          traceFlags: TraceFlags(),
+                                          traceState: TraceState()))
     }
 
     @discardableResult public func setParent(_ parent: Span) -> Self {

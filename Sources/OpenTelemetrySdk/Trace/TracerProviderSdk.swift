@@ -5,12 +5,15 @@
 
 import Foundation
 import OpenTelemetryApi
+import SwiftyBeaver
 
 public class TracerProviderSdk: TracerProvider {
     private var tracerLock = pthread_rwlock_t()
     private var tracerProvider = [InstrumentationScopeInfo: TracerSdk]()
     internal var sharedState: TracerSharedState
     internal static let emptyName = "unknown"
+
+    private static let logger = getLogger()
 
     /// Returns a new TracerProviderSdk with default Clock, IdGenerator and Resource.
     public init(clock: Clock = MillisClock(),
@@ -41,13 +44,15 @@ public class TracerProviderSdk: TracerProvider {
         var instrumentationName = instrumentationName
         if instrumentationName.isEmpty {
             // Per the spec, empty is "invalid"
-            print("Tracer requested without instrumentation name.")
+            TracerProviderSdk.logger.warning("TracerProviderSdk.\(#function): Tracer requested without instrumentation name.")
             instrumentationName = TracerProviderSdk.emptyName
         }
+        
         let instrumentationScopeInfo = InstrumentationScopeInfo(name: instrumentationName, version: instrumentationVersion ?? "")
 
         if pthread_rwlock_rdlock(&tracerLock) == 0 {
             let existingTracer = tracerProvider[instrumentationScopeInfo]
+
             pthread_rwlock_unlock(&tracerLock)
 
             if existingTracer != nil {
@@ -152,5 +157,14 @@ public class TracerProviderSdk: TracerProvider {
     /// Requests the active span processor to process all span events that have not yet been processed.
     public func forceFlush(timeout: TimeInterval? = nil) {
         sharedState.activeSpanProcessor.forceFlush(timeout: timeout)
+    }
+
+    private static func getLogger() -> SwiftyBeaver.Type {
+        let logger = SwiftyBeaver.self
+
+        logger.addDestination(ConsoleDestination())
+        logger.addDestination(FileDestination())
+
+        return logger
     }
 }
