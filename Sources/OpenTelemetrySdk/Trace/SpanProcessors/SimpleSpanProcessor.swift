@@ -30,7 +30,7 @@ public struct SimpleSpanProcessor: SpanProcessor {
         let span = span.toSpanData()
         let spanExporterAux = self.spanExporter
 
-        SimpleSpanProcessor.logger.info("SimpleSpanProcessor.\(#function): spanData: \(span)")
+        SimpleSpanProcessor.logger.debug("SimpleSpanProcessor.\(#function): spanData: \(span)")
 
         processorQueue.async {
             _ = spanExporterAux.export(spans: [span])
