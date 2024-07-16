@@ -7,7 +7,9 @@ import Foundation
 
 import OpenTelemetryApi
 import SwiftyBeaver
+import Logging
 
+let swiftLogger = Logger(label: "OpenTelemetrySDK")
 /// SpanBuilderSdk is SDK implementation of SpanBuilder.
 class SpanBuilderSdk: SpanBuilder {
     private enum ParentType {
@@ -159,7 +161,7 @@ class SpanBuilderSdk: SpanBuilder {
             OpenTelemetry.instance.contextProvider.setActiveSpan(createdSpan)
         }
 
-        SpanBuilderSdk.logger.debug("SpanBuilderSdk.\(#function): created span: \(createdSpan)")
+        swiftLogger.debug("SpanBuilderSdk.\(#function): created span: \(createdSpan)")
         
         return createdSpan
     }
@@ -175,7 +177,7 @@ class SpanBuilderSdk: SpanBuilder {
     private func getParentContext(parentType: ParentType, explicitParent: Span?, remoteParent: SpanContext?) -> SpanContext? {
         let currentSpan = OpenTelemetry.getActiveSpan()
 
-        SpanBuilderSdk.logger.debug("SpanBuilderSDK.\(#function): active span: \(String(describing: currentSpan))")
+        swiftLogger.debug("SpanBuilderSDK.\(#function): active span: \(String(describing: currentSpan))")
         
         var parentContext: SpanContext?
         
