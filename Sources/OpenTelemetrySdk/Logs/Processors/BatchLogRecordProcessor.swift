@@ -38,7 +38,7 @@ public class BatchLogRecordProcessor : LogRecordProcessor {
     }
 }
 
-private class BatchWorker : Thread {
+private class BatchWorker {
     let logRecordExporter : LogRecordExporter
     let scheduleDelay : TimeInterval
     let maxQueueSize : Int
@@ -49,7 +49,10 @@ private class BatchWorker : Thread {
     private let cond = NSCondition()
     var logRecordList = [ReadableLogRecord]()
     var queue : OperationQueue
-    
+    // TODO: Workaround for the following compiler issue, and can be removed once resolved
+    // https://github.com/swiftlang/swift/issues/76752
+    private let _thread : Thread
+
     init(logRecordExporter: LogRecordExporter,
          scheduleDelay: TimeInterval,
          exportTimeout: TimeInterval,
@@ -67,8 +70,17 @@ private class BatchWorker : Thread {
         queue = OperationQueue()
         queue.name = "BatchWorker Queue"
         queue.maxConcurrentOperationCount = 1
+        self._thread = Thread()
     }
-    
+
+    func start() {
+        self._thread.start()
+    }
+
+    func cancel() {
+        self._thread.cancel()
+    }
+
     func emit(logRecord: ReadableLogRecord) {
         cond.lock()
         defer { cond.unlock()}
@@ -84,7 +96,7 @@ private class BatchWorker : Thread {
         }
     }
     
-    override func main() {
+    func main() {
         #if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
         repeat {
             autoreleasepool {

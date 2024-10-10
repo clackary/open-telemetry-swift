@@ -56,7 +56,7 @@ public struct BatchSpanProcessor: SpanProcessor {
 /// BatchWorker is a thread that batches multiple spans and calls the registered SpanExporter to export
 /// the data.
 /// The list of batched data is protected by a NSCondition which ensures full concurrency.
-private class BatchWorker: Thread {
+private class BatchWorker {
     let spanExporter: SpanExporter
     let scheduleDelay: TimeInterval
     let maxQueueSize: Int
@@ -67,7 +67,10 @@ private class BatchWorker: Thread {
     private let cond = NSCondition()
     var spanList = [ReadableSpan]()
     var queue: OperationQueue
-    
+    // TODO: Workaround for the following compiler issue, and can be removed once resolved
+    // https://github.com/swiftlang/swift/issues/76752
+    private let _thread: Thread
+
     init(spanExporter: SpanExporter, scheduleDelay: TimeInterval, exportTimeout: TimeInterval, maxQueueSize: Int, maxExportBatchSize: Int, willExportCallback: ((inout [SpanData]) -> Void)?) {
         self.spanExporter = spanExporter
         self.scheduleDelay = scheduleDelay
@@ -79,8 +82,17 @@ private class BatchWorker: Thread {
         queue = OperationQueue()
         queue.name = "BatchWorker Queue"
         queue.maxConcurrentOperationCount = 1
+        self._thread = Thread()
     }
-    
+
+    func start() {
+        self._thread.start()
+    }
+
+    func cancel() {
+        self._thread.cancel()
+    }
+
     func addSpan(span: ReadableSpan) {
         cond.lock()
         defer { cond.unlock() }
@@ -99,7 +111,7 @@ private class BatchWorker: Thread {
     }
 
     #if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
-    override func main() {
+    func main() {
         repeat {
             autoreleasepool {
                 var spansCopy: [ReadableSpan]
@@ -117,7 +129,7 @@ private class BatchWorker: Thread {
         } while true
     }
     #else
-    override func main() {
+    func main() {
         repeat {
             var spansCopy: [ReadableSpan]
             cond.lock()
